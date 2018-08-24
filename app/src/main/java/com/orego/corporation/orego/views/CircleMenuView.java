@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
+import com.orego.corporation.orego.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -311,7 +313,7 @@ public class CircleMenuView extends FrameLayout {
         mRingRadius = (int) (buttonSize + (mDistance - buttonSize / 2));
         mDesiredSize = (int) (mRingRadius * 2 * DEFAULT_RING_SCALE_RATIO);
 
-        mRingView = findViewById(R.id.ring_view);
+        mRingView = (RingEffectView) findViewById(R.id.ring_view);
     }
 
     private void initMenu(int menuButtonColor) {
@@ -340,7 +342,7 @@ public class CircleMenuView extends FrameLayout {
             }
         };
 
-        mMenuButton = findViewById(R.id.circle_menu_main_button);
+        mMenuButton = (FloatingActionButton) findViewById(R.id.circle_menu_main_button);
         mMenuButton.setImageResource(mIconMenu);
         mMenuButton.setBackgroundTintList(ColorStateList.valueOf(menuButtonColor));
         mMenuButton.setOnClickListener(new OnClickListener() {
