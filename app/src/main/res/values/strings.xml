@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Orego</string>
+    <string name="change_the_language">Change the language</string>
+    <string name="orego">Orego</string>
+
+    <!-- NavDrawer -->
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="donate">Donate</string>
+    <string name="language">Language</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- SMTH -->
+    <string name="tab_title_main_1">Take picture</string>
+    <string name="tab_title_main_2">Gallery</string>
+
+    <!-- AboutAct -->
+    <string name="about_email_intent">About:MaterialDesign</string>
+    <string name="about_not_found_email">Not found email app</string>
+    <string name="about_source_licenses">Open source licenses</string>
+    <string name="share_with">Share with</string>
+    <string name="camera">Camera</string>
+    <string name="image">image</string>
+
 </resources>
