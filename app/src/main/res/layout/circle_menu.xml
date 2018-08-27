@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.orego.corporation.orego.views.circleMenu.customview.RingEffectView
         android:id="@+id/ring_view"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/circle_menu_main_button"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:src="@drawable/orego_app_icon"
-        app:backgroundTint="@android:color/white"/>
+        app:backgroundTint="@android:color/white" />
 
 </merge>

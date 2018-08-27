@@ -16,7 +16,7 @@ public class GalleryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_gallery, container, false);
+        NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.useless_fragment_gallery, container, false);
 
         return nestedScrollView;
     }

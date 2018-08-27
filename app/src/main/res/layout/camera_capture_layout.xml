@@ -8,7 +8,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="50dp"
+        android:layout_marginStart="50dp"
         android:contentDescription="@null"
         android:scaleType="centerInside"
         android:src="@drawable/ic_camera_close" />
@@ -37,4 +37,5 @@
             android:contentDescription="@null"
             android:scaleType="centerInside" />
     </FrameLayout>
+
 </merge>

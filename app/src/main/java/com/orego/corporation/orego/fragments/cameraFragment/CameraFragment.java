@@ -12,15 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-
 import com.orego.corporation.orego.R;
+import com.orego.corporation.orego.fragments.galleryFragment.OregoGalleryFragment;
 import com.orego.corporation.orego.fragments.otherActivities.OldMainActivity;
+import com.orego.corporation.orego.fragments.otherActivities.camera.CameraActivity;
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhoto;
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhotoManager;
-import com.orego.corporation.orego.fragments.galleryFragment.OregoGalleryFragment;
-
-import com.orego.corporation.orego.fragments.MainActivity;
-import com.orego.corporation.orego.fragments.otherActivities.camera.CameraActivity;
 
 import java.io.File;
 
@@ -39,7 +36,7 @@ public class CameraFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_camera, container, false);
+        NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.useless_fragment_camera, container, false);
         count = OregoPhotoManager.INSTANCE.getSpacePhotos().size();
 
         buttonCamera = (ImageButton) nestedScrollView.findViewById(R.id.button_camera);

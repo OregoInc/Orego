@@ -5,10 +5,10 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/app.name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".fragments.otherActivities.OldMainActivity">
+        android:theme="@style/AppTheme">
+        <activity android:name=".fragments.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -16,34 +16,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".fragments.otherActivities.SettingsActivity"
-            android:label="Settings"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.otherActivities.AboutActivity"
-            android:label="About"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar_StatusBar" />
-        <activity
-            android:name=".fragments.otherActivities.DonateActivity"
-            android:label="Donate"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".fragments.otherActivities.camera.CameraActivity"
             android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CameraActivity" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".fragments.otherActivities.face3dActivity.model3D.view.DemoActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".fragments.otherActivities.face3dActivity.model3D.view.ModelActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".fragments.MainActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".fragments.otherActivities.OldMainActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

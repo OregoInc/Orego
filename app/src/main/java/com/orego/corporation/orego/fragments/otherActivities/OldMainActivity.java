@@ -1,21 +1,16 @@
 package com.orego.corporation.orego.fragments.otherActivities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -31,7 +26,7 @@ import com.orego.corporation.orego.views.adapters.FragmentAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OldMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class OldMainActivity extends AppCompatActivity {
     public static OldMainActivity THIS;
 
     private DrawerLayout drawer;
@@ -88,7 +83,7 @@ public class OldMainActivity extends AppCompatActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         THIS = this;
-        setContentView(R.layout.activity_main_old);
+        setContentView(R.layout.useless_activity_main_old);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
         if (hasCameraPermission) {
 //            cameraView.setVisibility(View.VISIBLE);
@@ -97,23 +92,7 @@ public class OldMainActivity extends AppCompatActivity implements NavigationView
             permissionsDelegate.requestCameraPermission();
 
         }
-        initView();
         initViewPager();
-    }
-
-    private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
-//        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setItemIconTintList(null);
     }
 
     private void initViewPager() {
@@ -121,8 +100,8 @@ public class OldMainActivity extends AppCompatActivity implements NavigationView
         mViewPager = findViewById(R.id.view_pager_main);
 
         List<String> titles = new ArrayList<>();
-        titles.add(getString(R.string.tab_title_main_1));
-        titles.add(getString(R.string.tab_title_main_2));
+        titles.add("photo");
+        titles.add("gallery");
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(0)));
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(1)));
 
@@ -157,34 +136,6 @@ public class OldMainActivity extends AppCompatActivity implements NavigationView
 
         }
     };
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        Intent intent = new Intent();
-
-        switch (item.getItemId()) {
-
-            case R.id.nav_settings:
-                intent.setClass(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-
-            case R.id.nav_about:
-                intent.setClass(this, AboutActivity.class);
-                startActivity(intent);
-                break;
-
-            case R.id.nav_donate:
-                intent.setClass(this, DonateActivity.class);
-                startActivity(intent);
-                break;
-
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     @Override
     public void onBackPressed() {
