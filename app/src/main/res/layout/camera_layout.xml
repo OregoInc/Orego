@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:contentDescription="@null"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_camera_sw" />
+            android:src="@drawable/ic_camera_switch" />
     </FrameLayout>
 
     <ImageView

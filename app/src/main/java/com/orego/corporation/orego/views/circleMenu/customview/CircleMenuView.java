@@ -223,8 +223,8 @@ public class CircleMenuView extends FrameLayout {
                 iconsIds.recycle();
             }
 
-            mIconMenu = a.getResourceId(R.styleable.CircleMenuView_icon_menu, R.drawable.orego_app_icon);
-            mIconClose = a.getResourceId(R.styleable.CircleMenuView_icon_close, R.drawable.orego_app_icon);
+            mIconMenu = a.getResourceId(R.styleable.CircleMenuView_icon_menu, R.drawable.ic_orego);
+            mIconClose = a.getResourceId(R.styleable.CircleMenuView_icon_close, R.drawable.ic_orego);
 
             mDurationRing = a.getInteger(R.styleable.CircleMenuView_duration_ring, getResources().getInteger(android.R.integer.config_mediumAnimTime));
             mLongClickDurationRing = a.getInteger(R.styleable.CircleMenuView_long_click_duration_ring, getResources().getInteger(android.R.integer.config_longAnimTime));
@@ -257,8 +257,8 @@ public class CircleMenuView extends FrameLayout {
         final float density = context.getResources().getDisplayMetrics().density;
         final float defaultDistance = DEFAULT_DISTANCE * density;
 
-        mIconMenu = R.drawable.orego_app_icon;
-        mIconClose = R.drawable.orego_app_icon;
+        mIconMenu = R.drawable.ic_orego;
+        mIconClose = R.drawable.ic_orego;
 
         mDurationRing = getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mLongClickDurationRing = getResources().getInteger(android.R.integer.config_longAnimTime);

@@ -23,7 +23,7 @@
             android:id="@+id/camera_retry"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/camera_btn_retry_bg"
+            android:background="@drawable/btn_bg_camera_retry"
             android:contentDescription="@null"
             android:scaleType="centerInside"
             android:src="@drawable/ic_camera_retry" />
@@ -33,7 +33,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
-            android:background="@drawable/camera_btn_capture_bg"
+            android:background="@drawable/btn_bg_camera_capture"
             android:contentDescription="@null"
             android:scaleType="centerInside" />
     </FrameLayout>
