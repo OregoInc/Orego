@@ -1,82 +1,99 @@
 package com.orego.corporation.orego.fragments.cameraFragment;
 
-
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-
-
 import com.orego.corporation.orego.R;
-import com.orego.corporation.orego.fragments.otherActivities.OldMainActivity;
-import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhoto;
-import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhotoManager;
-import com.orego.corporation.orego.fragments.galleryFragment.OregoGalleryFragment;
-
-import com.orego.corporation.orego.fragments.MainActivity;
-import com.orego.corporation.orego.fragments.otherActivities.camera.CameraActivity;
-
+import com.orego.corporation.orego.fragments.otherActivities.face3dActivity.model3D.view.ModelActivity;
+import com.orego.corporation.orego.views.cameraview.CameraView;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
+public class CameraFragment extends Fragment implements CameraView.CameraListener {
+    private static final String TAG = "CameraFragment";
+    private CameraView mCameraView;
+    private String mPath;
 
-public class CameraFragment extends Fragment {
-
-    ImageButton buttonCamera;
-    Activity parent;
-    private static int count = 0;
-    static File directoryPhoto;
-
-    public static int getCount() {
-        return count;
+    public static void startForResult(Activity activity, File path, int requestCode) {
+        Intent intent = new Intent(activity, CameraFragment.class);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, path.getAbsolutePath());
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_camera, container, false);
-        count = OregoPhotoManager.INSTANCE.getSpacePhotos().size();
-
-        buttonCamera = (ImageButton) nestedScrollView.findViewById(R.id.button_camera);
-
-        buttonCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");
-                if (!orego.exists()) orego.mkdir();
-                directoryPhoto = new File(orego, "directory" + count);
-                if (!directoryPhoto.exists()) directoryPhoto.mkdir();
-                File photo = new File(directoryPhoto, "result.jpg");
-                CameraActivity.startForResult(parent, photo, 0);
-            }
-        });
-
-        return nestedScrollView;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ConstraintLayout constraintLayout = (ConstraintLayout) inflater.inflate(R.layout.camera_fragment, container, false);
+        mCameraView = constraintLayout.findViewById(R.id.camera_view);
+        mPath = getActivity().getIntent().getStringExtra(MediaStore.EXTRA_OUTPUT);
+        mCameraView.setCameraListener(this);
+        return  constraintLayout;
     }
 
 
-    public static void setImage(){
-        OregoPhotoManager.INSTANCE.add(new OregoPhoto(directoryPhoto));
-        OregoGalleryFragment.INIT.init();
-        count++;
-        
+    @Override
+    public void onCapture(Bitmap bitmap) {
+        File file = new File(mPath);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            Log.e(TAG, "save picture error", e);
+        }
+
+        if (file.exists()) {
+            Intent data = new Intent();
+            data.setData(Uri.parse(mPath));
+//            setResult(RESULT_OK, data);
+        }
+        CameraFrag.setImage();
+        Intent intent = new Intent(getContext(), ModelActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("countModel", CameraFrag.getCount() - 1);
+        b.putString("model", "null");
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        System.out.println("CAMERA FRAGMENT");
-//        if (resultCode == RESULT_OK && data != null) {
-//
-//        }
-//    }
+    @Override
+    public void onCameraClose() {
 
-    public void setParent(OldMainActivity oldMainActivity) {
-        parent = oldMainActivity;
+    }
+
+    @Override
+    public void onCameraError(Throwable th) {
+        Log.e(TAG, "camera error", th);
+        onCameraClose();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCameraView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mCameraView.onPause();
     }
 }

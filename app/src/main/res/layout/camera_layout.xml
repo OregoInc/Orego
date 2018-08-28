@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <me.wcy.camera.FocusView
+    <com.orego.corporation.orego.views.cameraview.FocusView
         android:id="@+id/camera_focus"
         android:layout_width="120dp"
         android:layout_height="120dp"
@@ -36,7 +36,7 @@
         android:scaleType="fitCenter"
         android:visibility="gone" />
 
-    <me.wcy.camera.CaptureLayout
+    <com.orego.corporation.orego.views.cameraview.CaptureLayout
         android:id="@+id/camera_capture_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

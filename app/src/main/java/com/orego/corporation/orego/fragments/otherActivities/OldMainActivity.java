@@ -23,8 +23,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.orego.corporation.orego.R;
-import com.orego.corporation.orego.fragments.cameraFragment.CameraFragment;
-import com.orego.corporation.orego.fragments.galleryFragment.OregoGalleryFragment;
+import com.orego.corporation.orego.fragments.cameraFragment.CameraFrag;
+import com.orego.corporation.orego.fragments.galleryFragment.GalleryFragment;
 import com.orego.corporation.orego.fragments.otherActivities.camera.PermissionsDelegate;
 import com.orego.corporation.orego.views.adapters.FragmentAdapter;
 
@@ -127,10 +127,10 @@ public class OldMainActivity extends AppCompatActivity implements NavigationView
         mTabLayout.addTab(mTabLayout.newTab().setText(titles.get(1)));
 
         List<Fragment> fragments = new ArrayList<>();
-        CameraFragment cameraFragment = new CameraFragment();
-        fragments.add(cameraFragment);
-        cameraFragment.setParent(this);
-        fragments.add(new OregoGalleryFragment());
+        CameraFrag cameraFragment = new CameraFrag();
+//        fragments.add(cameraFragment);
+//        cameraFragment.setParent(this);
+        fragments.add(new GalleryFragment());
         mViewPager.setOffscreenPageLimit(1);
 
         FragmentAdapter mFragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), fragments, titles);

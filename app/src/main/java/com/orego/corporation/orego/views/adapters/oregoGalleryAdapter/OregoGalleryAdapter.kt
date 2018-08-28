@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhotoManager
 import com.orego.corporation.orego.R
+import com.orego.corporation.orego.fragments.MainActivity
 import com.orego.corporation.orego.fragments.otherActivities.OldMainActivity
 import java.io.File
 
 
-class OregoGalleryAdapter() : RecyclerView.Adapter<OregoViewHolder>() {
+class OregoGalleryAdapter : RecyclerView.Adapter<OregoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OregoViewHolder {
         val context = parent.context
@@ -23,7 +24,7 @@ class OregoGalleryAdapter() : RecyclerView.Adapter<OregoViewHolder>() {
         val spacePhoto = OregoPhotoManager.getSpacePhotos()[position]
         val photo = File(spacePhoto.file, "result.jpg")
         val imageView = holder.photoImageView
-        Glide.with(OldMainActivity.THIS)
+        Glide.with(MainActivity.THIS)
                 .load(photo)
                 .into(imageView)
 
