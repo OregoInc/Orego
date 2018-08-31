@@ -13,6 +13,9 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.support.v4.widget.NestedScrollView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -51,20 +54,25 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
     private var mTextViewState: TextView? = null
     private var btnSheetOpen: ImageView? = null
     private var buttonCollapse: ImageView? = null
+    private var stateScrollView = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val coordinatorLayout = inflater.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
         val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
+        val text_down = coordinatorLayout.findViewById<TextView>(R.id.text_down_)
 
-        val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet)
+        val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         mTextViewState = coordinatorLayout.findViewById(R.id.text_view_state)
         btnSheetOpen = coordinatorLayout.findViewById<View>(R.id.btn_sheet_open) as ImageView
         buttonCollapse = coordinatorLayout.findViewById<View>(R.id.btn_sheet_close) as ImageView
-        btnSheetOpen!!.setOnClickListener { mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED) }
+        btnSheetOpen!!.setOnClickListener {
+            mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+        }
         buttonCollapse!!.setOnClickListener { mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED) }
         btnInfo = coordinatorLayout.findViewById(R.id.btn_info)
         mBottomSheetBehavior!!.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     btnCapture!!.visibility = VISIBLE
@@ -77,6 +85,8 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
                     btnSwitchCamera!!.visibility = GONE
                     btnRetry!!.visibility = GONE
                 }
+                stateScrollView = newState
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) text_down.visibility = View.GONE
                 when (newState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState!!.text = "Collapsed"
                     BottomSheetBehavior.STATE_DRAGGING -> mTextViewState!!.text = "Dragging..."
@@ -87,6 +97,13 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+                if (bottomSheet.visibility == View.INVISIBLE) bottomSheet.visibility = View.VISIBLE
+                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheet.visibility = View.INVISIBLE
+                    text_down.visibility = View.VISIBLE
+                }
+
                 mTextViewState!!.text = "Sliding..."
             }
         })
@@ -142,6 +159,24 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
                 }
             }
         }
+    }
+
+
+    /**
+     * Returns true iff the NestedScrollView is scrolled to the bottom of its
+     * content (i.e. if the card's inner RecyclerView is completely visible).
+     */
+    private fun isNsvScrolledToBottom(nsv: NestedScrollView): Boolean {
+        return !nsv.canScrollVertically(1)
+    }
+
+    /**
+     * Returns true iff the RecyclerView is scrolled to the top of its
+     * content (i.e. if the RecyclerView's first item is completely visible).
+     */
+    private fun isRvScrolledToTop(rv: RecyclerView): Boolean {
+        val lm = rv.layoutManager as LinearLayoutManager
+        return lm.findFirstVisibleItemPosition() == 0 && lm.findViewByPosition(0).top == 0
     }
 
     override fun onPause() {
