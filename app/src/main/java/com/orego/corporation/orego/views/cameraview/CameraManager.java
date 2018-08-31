@@ -79,12 +79,7 @@ public class CameraManager {
                 openImmediate();
 
                 final boolean success = (mState == State.STATE_OPENED);
-                mUiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onEvent(success);
-                    }
-                });
+                mUiHandler.post(() -> callback.onEvent(success));
             }
         });
     }
@@ -137,25 +132,17 @@ public class CameraManager {
                 if (mState != State.STATE_OPENED) {
                     return;
                 }
-
                 mCamera.cancelAutoFocus();
                 Camera.Parameters parameters = mCamera.getParameters();
                 CameraUtils.setFocusArea(mSurfaceSize, parameters, x, y);
-                mCamera.setParameters(parameters);
-                mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(final boolean success, Camera camera) {
-                        Log.d(TAG, "auto focus result: " + success);
+                mCamera.autoFocus((success, camera) -> {
+                    Log.d(TAG, "auto focus result: " + success);
 
-                        mUiHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callback != null) {
-                                    callback.onEvent(success);
-                                }
-                            }
-                        });
-                    }
+                    mUiHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onEvent(success);
+                        }
+                    });
                 });
             }
         });
@@ -228,37 +215,34 @@ public class CameraManager {
 
                 setState(State.STATE_SHOOTING);
 
-                mCamera.takePicture(null, null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        closeImmediate();
+                mCamera.takePicture(null, null, (data, camera) -> {
+                    closeImmediate();
 
-                        final Bitmap result;
-                        if (data != null && data.length > 0) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            Matrix matrix = new Matrix();
-                            int rotation = getDisplayOrientation() + mSensorRotation;
-                            if (mCameraId == CAMERA_ID_BACK) {
-                                matrix.setRotate(rotation);
-                            } else {
-                                rotation = (360 - rotation) % 360;
-                                matrix.setRotate(rotation);
-                                matrix.postScale(-1, 1);
-                            }
-                            result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    final Bitmap result;
+                    if (data != null && data.length > 0) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        Matrix matrix = new Matrix();
+                        int rotation = getDisplayOrientation() + mSensorRotation;
+                        if (mCameraId == CAMERA_ID_BACK) {
+                            matrix.setRotate(rotation);
                         } else {
-                            result = null;
+                            rotation = (360 - rotation) % 360;
+                            matrix.setRotate(rotation);
+                            matrix.postScale(-1, 1);
                         }
-
-                        mUiHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (callback != null) {
-                                    callback.onEvent(result);
-                                }
-                            }
-                        });
+                        result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    } else {
+                        result = null;
                     }
+
+                    mUiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (callback != null) {
+                                callback.onEvent(result);
+                            }
+                        }
+                    });
                 });
             }
         });

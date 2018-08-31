@@ -39,16 +39,13 @@ public class CameraFrag extends Fragment {
 
         buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
 
-        buttonCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");
-                if (!orego.exists()) orego.mkdir();
-                directoryPhoto = new File(orego, "directory" + count);
-                if (!directoryPhoto.exists()) directoryPhoto.mkdir();
-                File photo = new File(directoryPhoto, "result.jpg");
-                CameraFragment.startForResult(parent, photo, 0);
-            }
+        buttonCamera.setOnClickListener(v -> {
+            final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");
+            if (!orego.exists()) orego.mkdir();
+            directoryPhoto = new File(orego, "directory" + count);
+            if (!directoryPhoto.exists()) directoryPhoto.mkdir();
+            File photo = new File(directoryPhoto, "result.jpg");
+            CameraFragment.startForResult(parent, photo, 0);
         });
 
         return nestedScrollView;
