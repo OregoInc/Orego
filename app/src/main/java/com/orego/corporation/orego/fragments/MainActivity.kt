@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var galleryFragment: GalleryFragment
     private lateinit var infoFragment: InfoFragment
 
-    private var currentIndexFragment = 3
+    private var currentIndexFragment = 0
 
     private val permissionsDelegate = PermissionsDelegate(this)
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "replace Fragment new index:$index")
         currentIndexFragment = index!!
         when (index) {
-        //TODO: supportFragmentManager.beginTransaction().setCustomAnimations()
+            //TODO: supportFragmentManager.beginTransaction().setCustomAnimations()
             0 -> supportFragmentManager.beginTransaction().replace(R.id.container, cameraFragment).commit()
             1 -> supportFragmentManager.beginTransaction().replace(R.id.container, galleryFragment).commit()
             2 -> supportFragmentManager.beginTransaction().replace(R.id.container, infoFragment).commit()
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         Log.i(TAG, "OnBackPressed index:$currentIndexFragment")
-        if (currentIndexFragment != 3) replaceFragment(3)
+        if (currentIndexFragment != 0) replaceFragment(0)
         else {
             super.onBackPressed()
             val intent = Intent(Intent.ACTION_MAIN)

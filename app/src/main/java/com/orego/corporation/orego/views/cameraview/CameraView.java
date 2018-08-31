@@ -9,7 +9,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -79,9 +78,6 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback,
 
         mSurfaceView.setOnTouchListener(surfaceTouchListener);
         // fix `java.lang.RuntimeException: startPreview failed` on api 10
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
-            mSurfaceView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        }
         mSurfaceView.getHolder().addCallback(this);
         mCaptureLayout.setClickListener(this);
         mSwitchWrapper.setVisibility(CameraManager.getInstance().hasMultiCamera() ? VISIBLE : GONE);
@@ -240,37 +236,35 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback,
                 return false;
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                mFocusView.removeCallbacks(timeoutRunnable);
-                mFocusView.postDelayed(timeoutRunnable, 1500);
+            mFocusView.removeCallbacks(timeoutRunnable);
+            mFocusView.postDelayed(timeoutRunnable, 1500);
 
-                mFocusView.setVisibility(VISIBLE);
-                LayoutParams focusParams = (LayoutParams) mFocusView.getLayoutParams();
-                focusParams.leftMargin = (int) e.getX() - focusParams.width / 2;
-                focusParams.topMargin = (int) e.getY() - focusParams.height / 2;
-                mFocusView.setLayoutParams(focusParams);
+            mFocusView.setVisibility(VISIBLE);
+            LayoutParams focusParams = (LayoutParams) mFocusView.getLayoutParams();
+            focusParams.leftMargin = (int) e.getX() - focusParams.width / 2;
+            focusParams.topMargin = (int) e.getY() - focusParams.height / 2;
+            mFocusView.setLayoutParams(focusParams);
 
-                ObjectAnimator scaleX = ObjectAnimator.ofFloat(mFocusView, "scaleX", 1, 0.5f);
-                scaleX.setDuration(300);
-                ObjectAnimator scaleY = ObjectAnimator.ofFloat(mFocusView, "scaleY", 1, 0.5f);
-                scaleY.setDuration(300);
-                ObjectAnimator alpha = ObjectAnimator.ofFloat(mFocusView, "alpha", 1f, 0.3f, 1f, 0.3f, 1f, 0.3f, 1f);
-                alpha.setDuration(600);
-                AnimatorSet animatorSet = new AnimatorSet();
-                animatorSet.play(scaleX).with(scaleY).before(alpha);
-                animatorSet.start();
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(mFocusView, "scaleX", 1, 0.5f);
+            scaleX.setDuration(300);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(mFocusView, "scaleY", 1, 0.5f);
+            scaleY.setDuration(300);
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(mFocusView, "alpha", 1f, 0.3f, 1f, 0.3f, 1f, 0.3f, 1f);
+            alpha.setDuration(600);
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.play(scaleX).with(scaleY).before(alpha);
+            animatorSet.start();
 
-                CameraManager.Callback<Boolean> focusCallback = new CameraManager.Callback<Boolean>() {
-                    @Override
-                    public void onEvent(Boolean success) {
-                        if (mFocusView.getTag() == this && mFocusView.getVisibility() == VISIBLE) {
-                            mFocusView.setVisibility(INVISIBLE);
-                        }
+            CameraManager.Callback<Boolean> focusCallback = new CameraManager.Callback<Boolean>() {
+                @Override
+                public void onEvent(Boolean success) {
+                    if (mFocusView.getTag() == this && mFocusView.getVisibility() == VISIBLE) {
+                        mFocusView.setVisibility(INVISIBLE);
                     }
-                };
-                mFocusView.setTag(focusCallback);
-                CameraManager.getInstance().setFocus(e.getX(), e.getY(), focusCallback);
-            }
+                }
+            };
+            mFocusView.setTag(focusCallback);
+            CameraManager.getInstance().setFocus(e.getX(), e.getY(), focusCallback);
 
             return CameraManager.getInstance().hasMultiCamera();
         }

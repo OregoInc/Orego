@@ -11,7 +11,7 @@
         android:layout_marginLeft="50dp"
         android:contentDescription="@null"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_camera_close" />
+        android:src="@drawable/ic_camera_sw" />
 
     <FrameLayout
         android:id="@+id/camera_capture_retry_layout"
@@ -37,4 +37,15 @@
             android:contentDescription="@null"
             android:scaleType="centerInside" />
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/btn_sheet_open"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="50dp"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_add" />
+
 </merge>
