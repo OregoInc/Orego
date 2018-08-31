@@ -9,52 +9,47 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
-    <FrameLayout
-        android:id="@+id/camera_switch_wrapper"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="end">
-
-        <ImageView
-            android:id="@+id/camera_switch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@null"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_info" />
-    </FrameLayout>
-
     <ImageView
         android:id="@+id/camera_picture_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@null"
-        android:scaleType="fitCenter" />
-
-    <!--<com.orego.corporation.orego.views.cameraview.CaptureLayout-->
-    <!--android:id="@+id/camera_capture_layout"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--android:paddingBottom="30dp"-->
-    <!--android:paddingTop="30dp" />-->
+        android:layout_height="match_parent" />
 
     <ImageView
-        android:id="@+id/camera_close"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginLeft="50dp"
+        android:id="@+id/btn_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
         android:contentDescription="@null"
+        android:padding="12dp"
         android:scaleType="centerInside"
+        android:src="@drawable/ic_info" />
+
+    <ImageView
+        android:id="@+id/btn_switch"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="32dp"
+        android:padding="12dp"
         android:src="@drawable/ic_camera_sw" />
+
+    <ImageView
+        android:id="@+id/btn_sheet_open"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="32dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_add" />
 
     <FrameLayout
         android:id="@+id/camera_capture_retry_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center">
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="16dp">
 
         <ImageView
             android:id="@+id/camera_retry"
@@ -74,16 +69,6 @@
             android:contentDescription="@null"
             android:scaleType="centerInside" />
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/btn_sheet_open"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="50dp"
-        android:contentDescription="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_add" />
 
     <TextView
         android:id="@+id/text_view_state"

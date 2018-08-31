@@ -40,7 +40,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
         View.OnClickListener {
     private static final String TAG = "CameraFragment";
     private SurfaceView mSurfaceView;
-    private View mSwitchWrapper;
     private ImageView mPictureView;
     private CameraListener mCameraListener;
     private Bitmap mPicture;
@@ -49,6 +48,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
     private ImageView btnCapture;
     private ImageView btnRetry;
     private ImageView btnSwitchCamera;
+    private ImageView btnInfo;
     private boolean isExpanded;
     private BottomSheetBehavior mBottomSheetBehavior;
     private TextView mTextViewState;
@@ -66,11 +66,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) inflater.inflate(R.layout.camera_fragment, container, false);
-//        mCameraView = coordinatorLayout.findViewById(R.id.camera_view);
-        //    private CameraView mCameraView;
         String mPath = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(MediaStore.EXTRA_OUTPUT);
-//        mCameraView.setCameraListener(this);
-
 
         View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -79,9 +75,21 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
         buttonCollapse = (ImageView) coordinatorLayout.findViewById(R.id.btn_sheet_close);
         btnSheetOpen.setOnClickListener(v -> mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
         buttonCollapse.setOnClickListener(v -> mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED));
+        btnInfo = coordinatorLayout.findViewById(R.id.btn_info);
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    btnCapture.setVisibility(VISIBLE);
+                    btnSheetOpen.setVisibility(VISIBLE);
+                    btnSwitchCamera.setVisibility(VISIBLE);
+                    btnRetry.setVisibility(VISIBLE);
+                } else {
+                    btnCapture.setVisibility(GONE);
+                    btnSheetOpen.setVisibility(GONE);
+                    btnSwitchCamera.setVisibility(GONE);
+                    btnRetry.setVisibility(GONE);
+                }
                 switch (newState) {
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         mTextViewState.setText("Collapsed");
@@ -107,10 +115,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
             }
         });
 
-
-//        setClickable(true);
         isExpanded = false;
-//        setBackgroundColor(Color.BLACK);
         mCameraListener = new CameraListener() {
             @Override
             public void onCapture(Bitmap bitmap) {
@@ -127,27 +132,25 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
             onSwitchClick();
             return true;
         });
-        mSwitchWrapper = coordinatorLayout.findViewById(R.id.camera_switch_wrapper);
         mPictureView = (ImageView) coordinatorLayout.findViewById(R.id.camera_picture_preview);
 
         CameraManager.getInstance().init(getContext());
 
         // fix `java.lang.RuntimeException: startPreview failed` on api 10
         mSurfaceView.getHolder().addCallback(this);
-        mSwitchWrapper.setVisibility(CameraManager.getInstance().hasMultiCamera() ? VISIBLE : GONE);
-        mSwitchWrapper.setOnClickListener(this);
+        btnInfo.setVisibility(CameraManager.getInstance().hasMultiCamera() ? VISIBLE : GONE);
+        btnInfo.setOnClickListener(this);
 
         captureRetryLayout = coordinatorLayout.findViewById(R.id.camera_capture_retry_layout);
 
         btnCapture = (ImageView) coordinatorLayout.findViewById(R.id.camera_capture);
         btnRetry = (ImageView) coordinatorLayout.findViewById(R.id.camera_retry);
-        btnSwitchCamera = (ImageView) coordinatorLayout.findViewById(R.id.camera_close);
+        btnSwitchCamera = (ImageView) coordinatorLayout.findViewById(R.id.btn_switch);
 
         btnCapture.setOnClickListener(this);
         btnRetry.setOnClickListener(this);
         btnRetry.setEnabled(false);
         btnSwitchCamera.setOnClickListener(this);
-
 
         return coordinatorLayout;
     }
@@ -225,7 +228,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
         CameraManager.getInstance().takePicture(bitmap -> {
             if (bitmap != null) {
                 mSurfaceView.setVisibility(GONE);
-                mSwitchWrapper.setVisibility(GONE);
+                btnInfo.setVisibility(GONE);
                 btnSheetOpen.setVisibility(GONE);
                 mPictureView.setVisibility(VISIBLE);
                 mPicture = bitmap;
@@ -247,7 +250,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
     public void onRetryClick() {
         mPicture = null;
         mSurfaceView.setVisibility(VISIBLE);
-        mSwitchWrapper.setVisibility(CameraManager.getInstance().hasMultiCamera() ? VISIBLE : GONE);
+        btnInfo.setVisibility(CameraManager.getInstance().hasMultiCamera() ? VISIBLE : GONE);
         btnSheetOpen.setVisibility(VISIBLE);
         mPictureView.setImageBitmap(null);
         mPictureView.setVisibility(GONE);
@@ -264,7 +267,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback,
 
     @Override
     public void onClick(View v) {
-        if (v == mSwitchWrapper) {
+        if (v == btnInfo) {
             Log.d(TAG, "info click");
         }
 
