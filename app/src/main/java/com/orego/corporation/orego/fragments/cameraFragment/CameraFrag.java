@@ -45,7 +45,7 @@ public class CameraFrag extends Fragment {
             directoryPhoto = new File(orego, "directory" + count);
             if (!directoryPhoto.exists()) directoryPhoto.mkdir();
             File photo = new File(directoryPhoto, "result.jpg");
-            CameraFragment.startForResult(parent, photo, 0);
+            CameraFragment.Companion.startForResult(parent, photo, 0);
         });
 
         return nestedScrollView;
