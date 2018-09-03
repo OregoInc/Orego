@@ -29,8 +29,8 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="bottom|start"
-        android:layout_marginStart="48dp"
         android:layout_marginBottom="32dp"
+        android:layout_marginStart="48dp"
         android:padding="12dp"
         android:src="@drawable/ic_camera_sw" />
 
@@ -39,8 +39,8 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="48dp"
         android:layout_marginBottom="32dp"
+        android:layout_marginEnd="48dp"
         android:padding="12dp"
         android:src="@drawable/ic_add" />
 
@@ -68,6 +68,7 @@
             android:background="@drawable/camera_btn_capture_bg"
             android:contentDescription="@null"
             android:scaleType="centerInside" />
+
     </FrameLayout>
 
     <TextView
@@ -114,6 +115,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_sheet_close" />
+
             <TextView
                 android:id="@+id/text_down_"
                 android:layout_width="match_parent"
@@ -126,6 +128,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_down" />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>

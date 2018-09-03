@@ -10,7 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme">
 
         <activity android:name=".fragments.otherActivities.OldMainActivity"
             android:screenOrientation="portrait"/>
@@ -19,12 +19,6 @@
             android:label="Settings"
             android:parentActivityName=".fragments.otherActivities.OldMainActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.otherActivities.AboutActivity"
-            android:label="About"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar_StatusBar" />
         <activity
             android:name=".fragments.otherActivities.DonateActivity"
             android:label="Donate"
