@@ -25,7 +25,7 @@ class MenuFragment : Fragment() {
     }
 
 
-    private fun initListeners(menu: CircleMenuView){
+    private fun initListeners(menu: CircleMenuView) {
         menu.eventListener = object : CircleMenuView.EventListener() {
 
             override fun onMenuOpenAnimationStart(view: CircleMenuView) {

@@ -66,15 +66,7 @@ public class PermissionsDelegate {
             return false;
         }
 
-//        View noPermissionView = activity.findViewById(R.id.no_permission);
-//
-//        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            noPermissionView.setVisibility(View.GONE);
-//            return true;
-//        }
-
         requestCameraPermission();
-//        noPermissionView.setVisibility(View.VISIBLE);
         return false;
     }
 }

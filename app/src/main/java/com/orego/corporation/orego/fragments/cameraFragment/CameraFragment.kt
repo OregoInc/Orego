@@ -1,16 +1,22 @@
 package com.orego.corporation.orego.fragments.cameraFragment
 
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.database.MergeCursor
 import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.widget.NestedScrollView
@@ -24,75 +30,93 @@ import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
 
 import com.orego.corporation.orego.R
 import com.orego.corporation.orego.views.cameraview.CameraManager
 import com.orego.corporation.orego.views.cameraview.CameraUtils
 
 import java.io.File
-import java.util.Objects
 
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.*
+import butterknife.BindView
+import butterknife.ButterKnife
+import com.bumptech.glide.Glide
+import com.orego.corporation.orego.R.id.main_recycle1
+import com.orego.corporation.orego.adapter.DemoAdapter
+import com.orego.corporation.orego.base.BaseRestoreFragment
+import com.orego.corporation.orego.fragments.MainActivity
+import com.orego.corporation.orego.gallery.AlbumFragment
+import com.orego.corporation.orego.gallery.MapComparator
+import com.orego.corporation.orego.gallery.PermissionUtils
+import com.orego.corporation.orego.layout.impl.ScaleTransformer
+import com.orego.corporation.orego.managers.GalleryLayoutManager
+import java.util.*
 
-class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener {
-    private lateinit var mSurfaceView: SurfaceView
-    private lateinit var mPictureView: ImageView
-    private lateinit var mCameraListener: CameraListener
-    private var mPicture: Bitmap? = null
-    private var isSurfaceCreated: Boolean = false
-    private lateinit var captureRetryLayout: View
-    private lateinit var btnCapture: ImageView
-    private lateinit var btnRetry: ImageView
-    private lateinit var btnSwitchCamera: ImageView
-    private lateinit var btnInfo: ImageView
-    private var isExpanded: Boolean = false
-    private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
-    private lateinit var mTextViewState: TextView
-    private lateinit var btnSheetOpen: ImageView
-    private lateinit var buttonCollapse: ImageView
-    private var stateScrollView = -1
+class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnClickListener {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val coordinatorLayout = inflater.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
+   var mMainRecycle1: RecyclerView? = null
+    var a = 1
+   lateinit var mSurfaceView: SurfaceView
+   lateinit var mPictureView: ImageView
+   lateinit var mCameraListener: CameraListener
+   var mPicture: Bitmap? = null
+   var isSurfaceCreated: Boolean = false
+   lateinit var captureRetryLayout: View
+   lateinit var btnCapture: ImageView
+   lateinit var btnRetry: ImageView
+   lateinit var btnSwitchCamera: ImageView
+   lateinit var btnInfo: ImageView
+   var isExpanded: Boolean = false
+   lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
+   lateinit var mTextViewState: TextView
+   lateinit var btnSheetOpen: ImageView
+   lateinit var buttonCollapse: ImageView
+    var stateScrollView = -1
+    private val REQUEST_PERMISSION_KEY = 1
+
+    lateinit var galleryGridView: GridView
+    private lateinit var loadAlbumTask: LoadAlbum
+    internal var albumList = ArrayList<HashMap<String, String>>()
+
+    override fun onCreateContentView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val coordinatorLayout = inflater!!.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
         val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
-        val text_down = coordinatorLayout.findViewById<TextView>(R.id.text_down_)
 
+        mMainRecycle1 = coordinatorLayout.findViewById(main_recycle1)
         val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         mTextViewState = coordinatorLayout.findViewById(R.id.text_view_state)
         btnSheetOpen = coordinatorLayout.findViewById<View>(R.id.btn_sheet_open) as ImageView
         buttonCollapse = coordinatorLayout.findViewById<View>(R.id.btn_sheet_close) as ImageView
-        btnSheetOpen!!.setOnClickListener {
-            mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+        btnSheetOpen.setOnClickListener {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        buttonCollapse!!.setOnClickListener { mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED) }
+        buttonCollapse.setOnClickListener { mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED) }
         btnInfo = coordinatorLayout.findViewById(R.id.btn_info)
-        mBottomSheetBehavior!!.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    btnCapture!!.visibility = VISIBLE
-                    btnSheetOpen!!.visibility = VISIBLE
-                    btnSwitchCamera!!.visibility = VISIBLE
-                    btnRetry!!.visibility = VISIBLE
+                    btnCapture.visibility = VISIBLE
+                    btnSheetOpen.visibility = VISIBLE
+                    btnSwitchCamera.visibility = VISIBLE
+                    btnRetry.visibility = VISIBLE
                 } else {
-                    btnCapture!!.visibility = GONE
-                    btnSheetOpen!!.visibility = GONE
-                    btnSwitchCamera!!.visibility = GONE
-                    btnRetry!!.visibility = GONE
+                    btnCapture.visibility = GONE
+                    btnSheetOpen.visibility = GONE
+                    btnSwitchCamera.visibility = GONE
+                    btnRetry.visibility = GONE
                 }
                 stateScrollView = newState
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) text_down.visibility = View.GONE
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) galleryGridView.visibility = View.GONE
                 when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState!!.text = "Collapsed"
-                    BottomSheetBehavior.STATE_DRAGGING -> mTextViewState!!.text = "Dragging..."
-                    BottomSheetBehavior.STATE_EXPANDED -> mTextViewState!!.text = "Expanded"
-                    BottomSheetBehavior.STATE_HIDDEN -> mTextViewState!!.text = "Hidden"
-                    BottomSheetBehavior.STATE_SETTLING -> mTextViewState!!.text = "Settling..."
+                    BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState.text = "Collapsed"
+                    BottomSheetBehavior.STATE_DRAGGING -> mTextViewState.text = "Dragging..."
+                    BottomSheetBehavior.STATE_EXPANDED -> mTextViewState.text = "Expanded"
+                    BottomSheetBehavior.STATE_HIDDEN -> mTextViewState.text = "Hidden"
+                    BottomSheetBehavior.STATE_SETTLING -> mTextViewState.text = "Settling..."
                 }
             }
 
@@ -103,10 +127,10 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
                 }
                 if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED) {
                     bottomSheet.visibility = View.INVISIBLE
-                    text_down.visibility = View.VISIBLE
+                    galleryGridView.visibility = View.VISIBLE
                 }
 
-                mTextViewState!!.text = "Sliding..."
+                mTextViewState.text = "Sliding..."
             }
         })
 
@@ -121,7 +145,7 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
             }
         }
         mSurfaceView = coordinatorLayout.findViewById<View>(R.id.camera_surface) as SurfaceView
-        mSurfaceView!!.setOnLongClickListener {
+        mSurfaceView.setOnLongClickListener {
             onSwitchClick()
             true
         }
@@ -130,9 +154,9 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         CameraManager.getInstance().init(context)
 
         // fix `java.lang.RuntimeException: startPreview failed` on api 10
-        mSurfaceView!!.holder.addCallback(this)
-        btnInfo!!.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
-        btnInfo!!.setOnClickListener(this)
+        mSurfaceView.holder.addCallback(this)
+        btnInfo.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
+        btnInfo.setOnClickListener(this)
 
         captureRetryLayout = coordinatorLayout.findViewById(R.id.camera_capture_retry_layout)
 
@@ -140,14 +164,67 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         btnRetry = coordinatorLayout.findViewById<View>(R.id.camera_retry) as ImageView
         btnSwitchCamera = coordinatorLayout.findViewById<View>(R.id.btn_switch) as ImageView
 
-        btnCapture!!.setOnClickListener(this)
-        btnRetry!!.setOnClickListener(this)
-        btnRetry!!.isEnabled = false
-        btnSwitchCamera!!.setOnClickListener(this)
-
+        btnCapture.setOnClickListener(this)
+        btnRetry.setOnClickListener(this)
+        btnRetry.isEnabled = false
+        btnSwitchCamera.setOnClickListener(this)
+        galleryGridView = coordinatorLayout.findViewById(R.id.galleryGridView) as GridView
+        val PERMISSIONS = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (!PermissionUtils.hasPermissions(activity, *PERMISSIONS)) {
+            ActivityCompat.requestPermissions(activity!!, PERMISSIONS, REQUEST_PERMISSION_KEY)
+        } else {
+            loadAlbumTask = LoadAlbum()
+            loadAlbumTask.execute()
+        }
         return coordinatorLayout
     }
 
+    override fun initView(root: View?, savedInstanceState: Bundle?) {
+        val iDisplayWidth = resources.displayMetrics.widthPixels
+        val resources = resources
+        val metrics = resources.displayMetrics
+        var dp = iDisplayWidth / (metrics.densityDpi / 160f)
+
+        if (dp < 360) {
+            dp = (dp - 17) / 2
+            val px = PermissionUtils.convertDpToPixel(dp, Objects.requireNonNull(context))
+            galleryGridView.columnWidth = Math.round(px)
+        }
+        ButterKnife.bind(this, root!!)
+        val title = ArrayList<String>()
+        val size = 50
+        for (i in 0 until size) {
+            title.add("Hello$i")
+        }
+        val layoutManager1 = GalleryLayoutManager(GalleryLayoutManager.HORIZONTAL)
+        Log.i("CAMERA_FRAGMENT", "mMainRecycle1 = $mMainRecycle1")
+        layoutManager1.attach(mMainRecycle1, 0)
+        layoutManager1.setItemTransformer(ScaleTransformer())
+        val demoAdapter1 = object : DemoAdapter(title) {
+        }
+        demoAdapter1.setOnItemClickListener { view, position -> mMainRecycle1!!.smoothScrollToPosition(position) }
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL);
+//        mMainRecycle1.addItemDecoration(dividerItemDecoration);
+        mMainRecycle1!!.adapter = demoAdapter1
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_PERMISSION_KEY -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    loadAlbumTask = LoadAlbum()
+                    loadAlbumTask.execute()
+                } else {
+                    Toast.makeText(activity!!.baseContext, "You must accept permissions.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+    }
+
+    override fun initData(savedInstanceState: Bundle?) {
+    }
 
     override fun onResume() {
         super.onResume()
@@ -156,8 +233,8 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
         if (!CameraManager.getInstance().isOpened && isSurfaceCreated) {
             CameraManager.getInstance().open { success ->
-                if (!success && mCameraListener != null) {
-                    mCameraListener!!.onCameraError(Exception("open camera failed"))
+                if (!success) {
+                    mCameraListener.onCameraError(Exception("open camera failed"))
                 }
             }
         }
@@ -218,8 +295,8 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         }
 
         CameraManager.getInstance().open { success ->
-            if (!success && mCameraListener != null) {
-                mCameraListener!!.onCameraError(Exception("open camera failed"))
+            if (!success) {
+                mCameraListener.onCameraError(Exception("open camera failed"))
             }
         }
     }
@@ -233,12 +310,12 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
     private fun onCaptureClick() {
         CameraManager.getInstance().takePicture { bitmap ->
             if (bitmap != null) {
-                mSurfaceView!!.visibility = GONE
-                btnInfo!!.visibility = GONE
-                btnSheetOpen!!.visibility = GONE
-                mPictureView!!.visibility = VISIBLE
+                mSurfaceView.visibility = GONE
+                btnInfo.visibility = GONE
+                btnSheetOpen.visibility = GONE
+                mPictureView.visibility = VISIBLE
                 mPicture = bitmap
-                mPictureView!!.setImageBitmap(mPicture)
+                mPictureView.setImageBitmap(mPicture)
                 expand()
             } else {
                 isExpanded = false
@@ -248,25 +325,25 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
     }
 
     private fun onOkClick() {
-        if (mPicture != null && mCameraListener != null) {
-            mCameraListener!!.onCapture(mPicture!!)
+        if (mPicture != null) {
+            mCameraListener.onCapture(mPicture!!)
         }
     }
 
     private fun onRetryClick() {
         mPicture = null
-        mSurfaceView!!.visibility = VISIBLE
-        btnInfo!!.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
-        btnSheetOpen!!.visibility = VISIBLE
-        mPictureView!!.setImageBitmap(null)
-        mPictureView!!.visibility = GONE
+        mSurfaceView.visibility = VISIBLE
+        btnInfo.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
+        btnSheetOpen.visibility = VISIBLE
+        mPictureView.setImageBitmap(null)
+        mPictureView.visibility = GONE
         fold()
     }
 
     private fun onSwitchClick() {
         CameraManager.getInstance().switchCamera { success ->
-            if (!success && mCameraListener != null) {
-                mCameraListener!!.onCameraError(Exception("switch camera failed"))
+            if (!success) {
+                mCameraListener.onCameraError(Exception("switch camera failed"))
             }
         }
     }
@@ -291,9 +368,9 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     private fun expand() {
         isExpanded = true
-        btnCapture!!.setImageResource(R.drawable.ic_camera_done)
-        btnRetry!!.isEnabled = true
-        btnSwitchCamera!!.visibility = GONE
+        btnCapture.setImageResource(R.drawable.ic_camera_done)
+        btnRetry.isEnabled = true
+        btnSwitchCamera.visibility = GONE
 
         playExpandAnimation()
     }
@@ -305,11 +382,11 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         scaleAnimator.duration = 100
         scaleAnimator.addUpdateListener { animation ->
             val value = animation.animatedValue as Int
-            val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+            val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
             captureParams.width = value
             captureParams.height = value
             captureParams.gravity = Gravity.CENTER
-            btnCapture!!.requestLayout()
+            btnCapture.requestLayout()
         }
 
         val transAnimator = ValueAnimator.ofInt(CameraUtils.dp2px(context!!, 80f), CameraUtils.dp2px(context!!, 280f))
@@ -317,12 +394,12 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         transAnimator.duration = 200
         transAnimator.addUpdateListener { animation ->
             val value = animation.animatedValue as Int
-            val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+            val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
             captureParams.gravity = Gravity.END
 
-            val layoutParams = captureRetryLayout!!.layoutParams as CoordinatorLayout.LayoutParams
+            val layoutParams = captureRetryLayout.layoutParams as CoordinatorLayout.LayoutParams
             layoutParams.width = value
-            captureRetryLayout!!.requestLayout()
+            captureRetryLayout.requestLayout()
         }
 
         val animatorSet = AnimatorSet()
@@ -332,19 +409,19 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     private fun fold() {
         isExpanded = false
-        btnCapture!!.setImageResource(0)
-        btnRetry!!.isEnabled = false
-        btnSwitchCamera!!.visibility = VISIBLE
+        btnCapture.setImageResource(0)
+        btnRetry.isEnabled = false
+        btnSwitchCamera.visibility = VISIBLE
 
         val length = CameraUtils.dp2px(context!!, 60f)
-        val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+        val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
         captureParams.width = length
         captureParams.height = length
         captureParams.gravity = Gravity.CENTER
 
-        val layoutParams = captureRetryLayout!!.layoutParams as CoordinatorLayout.LayoutParams
+        val layoutParams = captureRetryLayout.layoutParams as CoordinatorLayout.LayoutParams
         layoutParams.width = CameraUtils.dp2px(context!!, 80f)
-        captureRetryLayout!!.requestLayout()
+        captureRetryLayout.requestLayout()
     }
 
     companion object {
@@ -356,5 +433,116 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             activity.startActivityForResult(intent, requestCode)
         }
+    }
+
+    inner class LoadAlbum : AsyncTask<String, Void, String>() {
+        override fun onPreExecute() {
+            super.onPreExecute()
+            albumList.clear()
+        }
+
+        override fun doInBackground(vararg args: String): String {
+            val xml = ""
+
+            var path: String? = null
+            var album: String? = null
+            var timestamp: String? = null
+            var countPhoto: String? = null
+            val uriExternal = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val uriInternal = MediaStore.Images.Media.INTERNAL_CONTENT_URI
+
+
+            val projection = arrayOf(MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED)
+            val cursorExternal = activity!!.contentResolver.query(uriExternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name", null, null)
+            val cursorInternal = activity!!.contentResolver.query(uriInternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name", null, null)
+            val cursor = MergeCursor(arrayOf(cursorExternal, cursorInternal))
+
+            while (cursor.moveToNext()) {
+
+                path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
+                album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
+                timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED))
+                countPhoto = PermissionUtils.getCount(activity!!.getApplicationContext(), album)
+
+                albumList.add(PermissionUtils.mappingInbox(album, path, timestamp, PermissionUtils.converToTime(timestamp), countPhoto))
+            }
+            cursor.close()
+            Collections.sort(albumList, MapComparator(PermissionUtils.KEY_TIMESTAMP, "dsc")) // Arranging photo album by timestamp decending
+            return xml
+        }
+
+        override fun onPostExecute(xml: String) {
+            val adapter = AlbumAdapter(activity!!, albumList)
+            galleryGridView.adapter = adapter
+            galleryGridView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+                //                    Intent intent = new Intent(getActivity().getBaseContext(), AlbumFragment.class);
+                //                    intent.putExtra("name", albumList.get(+position).get(Function.KEY_ALBUM));
+                //                    startActivity(intent);
+                val bundle = Bundle()
+                bundle.putString("name", albumList[+position][PermissionUtils.KEY_ALBUM])
+                val albumFragment = AlbumFragment()
+                albumFragment.arguments = bundle
+                (activity as MainActivity).replaceFragment(albumFragment)
+            }
+        }
+    }
+
+    internal inner class AlbumAdapter(private val activity: Activity, private val data: ArrayList<HashMap<String, String>>) : BaseAdapter() {
+
+        override fun getCount(): Int {
+            return data.size
+        }
+
+        override fun getItem(position: Int): Any {
+            return position
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            var convertView = convertView
+            var holder: AlbumViewHolder? = null
+            if (convertView == null) {
+                holder = AlbumViewHolder()
+                convertView = LayoutInflater.from(activity).inflate(
+                        R.layout.album_row, parent, false)
+
+                holder.galleryImage = convertView!!.findViewById<View>(R.id.galleryImage) as ImageView
+                holder.gallery_count = convertView.findViewById<View>(R.id.gallery_count) as TextView
+                holder.gallery_title = convertView.findViewById<View>(R.id.gallery_title) as TextView
+
+                convertView.tag = holder
+            } else {
+                holder = convertView.tag as AlbumViewHolder
+            }
+            holder.galleryImage!!.id = position
+            holder.gallery_count!!.id = position
+            holder.gallery_title!!.id = position
+
+            var song = HashMap<String, String>()
+            song = data[position]
+            try {
+                holder.gallery_title!!.text = song[PermissionUtils.KEY_ALBUM]
+                holder.gallery_count!!.text = song[PermissionUtils.KEY_COUNT]
+
+                Glide.with(activity)
+                        .load(File(song[PermissionUtils.KEY_PATH])) // Uri of the picture
+                        .into(holder.galleryImage!!)
+
+
+            } catch (ignored: Exception) {
+            }
+
+            return convertView
+        }
+    }
+
+
+    internal inner class AlbumViewHolder {
+        var galleryImage: ImageView? = null
+        var gallery_count: TextView? = null
+        var gallery_title: TextView? = null
     }
 }
