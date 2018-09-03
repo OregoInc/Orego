@@ -16,45 +16,44 @@
 
     <ImageView
         android:id="@+id/btn_info"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon_phone_large"
+        android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="top|end"
-        android:contentDescription="@null"
-        android:padding="12dp"
-        android:scaleType="centerInside"
+        android:padding="@dimen/size_normal"
         android:src="@drawable/ic_info" />
 
     <ImageView
         android:id="@+id/btn_switch"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon_phone_large"
+        android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="32dp"
-        android:layout_marginStart="48dp"
-        android:padding="12dp"
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:layout_marginStart="@dimen/spacing_larger"
+        android:padding="@dimen/size_normal"
         android:src="@drawable/ic_camera_sw" />
 
     <ImageView
         android:id="@+id/btn_sheet_open"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon_phone_large"
+        android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="48dp"
-        android:padding="12dp"
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_larger"
+        android:padding="@dimen/size_normal"
         android:src="@drawable/ic_add" />
 
+    <!--  -->
     <FrameLayout
         android:id="@+id/camera_capture_retry_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="@dimen/spacing_large">
 
         <ImageView
             android:id="@+id/camera_retry"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/size_huge"
+            android:layout_height="@dimen/size_huge"
             android:background="@drawable/camera_btn_retry_bg"
             android:contentDescription="@null"
             android:scaleType="centerInside"
@@ -62,8 +61,8 @@
 
         <ImageView
             android:id="@+id/camera_capture"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/size_large"
+            android:layout_height="@dimen/size_large"
             android:layout_gravity="center"
             android:background="@drawable/camera_btn_capture_bg"
             android:contentDescription="@null"
@@ -81,6 +80,7 @@
         android:textColor="@android:color/black"
         android:textSize="30sp" />
 
+    <!--  -->
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
@@ -96,9 +96,10 @@
 
             <ImageView
                 android:id="@+id/btn_sheet_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/icon_phone"
+                android:layout_height="@dimen/icon_phone"
                 android:layout_marginTop="8dp"
+                android:padding="@dimen/spacing_small"
                 android:src="@drawable/ic_arrow_down"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
