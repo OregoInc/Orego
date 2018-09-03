@@ -39,21 +39,21 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 
 class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener {
-    private var mSurfaceView: SurfaceView? = null
-    private var mPictureView: ImageView? = null
-    private var mCameraListener: CameraListener? = null
+    private lateinit var mSurfaceView: SurfaceView
+    private lateinit var mPictureView: ImageView
+    private lateinit var mCameraListener: CameraListener
     private var mPicture: Bitmap? = null
     private var isSurfaceCreated: Boolean = false
-    private var captureRetryLayout: View? = null
-    private var btnCapture: ImageView? = null
-    private var btnRetry: ImageView? = null
-    private var btnSwitchCamera: ImageView? = null
-    private var btnInfo: ImageView? = null
+    private lateinit var captureRetryLayout: View
+    private lateinit var btnCapture: ImageView
+    private lateinit var btnRetry: ImageView
+    private lateinit var btnSwitchCamera: ImageView
+    private lateinit var btnInfo: ImageView
     private var isExpanded: Boolean = false
-    private var mBottomSheetBehavior: BottomSheetBehavior<*>? = null
-    private var mTextViewState: TextView? = null
-    private var btnSheetOpen: ImageView? = null
-    private var buttonCollapse: ImageView? = null
+    private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var mTextViewState: TextView
+    private lateinit var btnSheetOpen: ImageView
+    private lateinit var buttonCollapse: ImageView
     private var stateScrollView = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -98,7 +98,9 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
-                if (bottomSheet.visibility == View.INVISIBLE) bottomSheet.visibility = View.VISIBLE
+                if (bottomSheet.visibility == View.INVISIBLE) {
+                    bottomSheet.visibility = View.VISIBLE
+                }
                 if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED) {
                     bottomSheet.visibility = View.INVISIBLE
                     text_down.visibility = View.VISIBLE

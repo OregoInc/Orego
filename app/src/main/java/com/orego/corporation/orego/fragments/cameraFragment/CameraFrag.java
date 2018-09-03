@@ -11,21 +11,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
 import com.orego.corporation.orego.R;
 import com.orego.corporation.orego.fragments.MainActivity;
-import com.orego.corporation.orego.fragments.otherActivities.OldMainActivity;
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhoto;
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhotoManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 
 public class CameraFrag extends Fragment {
 
-    ImageButton buttonCamera;
-    Activity parent;
+    private Activity parent;
     private static int count = 0;
-    static File directoryPhoto;
+    private static File directoryPhoto;
 
     public static int getCount() {
         return count;
@@ -33,17 +34,19 @@ public class CameraFrag extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_camera, container, false);
         count = OregoPhotoManager.INSTANCE.getSpacePhotos().size();
-
-        buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
-
+        ImageButton buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
         buttonCamera.setOnClickListener(v -> {
             final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");
-            if (!orego.exists()) orego.mkdir();
+            if (!orego.exists()) {
+                orego.mkdir();
+            }
             directoryPhoto = new File(orego, "directory" + count);
-            if (!directoryPhoto.exists()) directoryPhoto.mkdir();
+            if (!directoryPhoto.exists()) {
+                directoryPhoto.mkdir();
+            }
             File photo = new File(directoryPhoto, "result.jpg");
             CameraFragment.Companion.startForResult(parent, photo, 0);
         });
@@ -52,12 +55,12 @@ public class CameraFrag extends Fragment {
     }
 
 
-    public static void setImage(){
+    public static void setImage() {
         OregoPhotoManager.INSTANCE.add(new OregoPhoto(directoryPhoto));
         count++;
     }
 
-    public void setParent(MainActivity oldMainActivity) {
+    public void setParent(final MainActivity oldMainActivity) {
         parent = oldMainActivity;
     }
 }
