@@ -86,13 +86,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#80FFFFFF"
+        android:fillViewport="true"
         app:behavior_hideable="false"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/btn_sheet_close"
@@ -105,30 +106,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_down"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/main_recycle1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="16dp"
-                android:padding="16dp"
-                android:text="hello"
-                android:textSize="16sp"
+                android:layout_height="200dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_sheet_close" />
 
-            <TextView
-                android:id="@+id/text_down_"
+            <GridView
+                android:id="@+id/galleryGridView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="16dp"
-                android:padding="16dp"
-                android:text="@string/help"
-                android:textSize="16sp"
-                android:visibility="gone"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:columnWidth="172dp"
+                android:gravity="center"
+                android:horizontalSpacing="5dp"
+                android:numColumns="auto_fit"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingRight="5dp"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_down" />
+                app:layout_constraintTop_toBottomOf="@id/main_recycle1"/>
 
         </android.support.constraint.ConstraintLayout>
 
