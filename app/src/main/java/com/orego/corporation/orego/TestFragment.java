@@ -84,8 +84,8 @@ public class TestFragment extends BaseRestoreFragment {
     @Override
     protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) inflater.inflate(R.layout.fragment_test, container, false);
-        final TextView textView = (TextView) coordinatorLayout.findViewById(R.id.text_view_state);
-        ImageView buttonCollapse = (ImageView) coordinatorLayout.findViewById(R.id.btn_sheet_close);
+        final TextView textView = coordinatorLayout.findViewById(R.id.text_view_state);
+        ImageView buttonCollapse = coordinatorLayout.findViewById(R.id.btn_sheet_close);
         View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         textView.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +131,7 @@ public class TestFragment extends BaseRestoreFragment {
             }
         });
 
-        galleryGridView = (GridView) coordinatorLayout.findViewById(R.id.galleryGridView);
+        galleryGridView = coordinatorLayout.findViewById(R.id.galleryGridView);
         String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
         if (!PermissionUtils.hasPermissions(getActivity(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), PERMISSIONS, 1);
@@ -294,9 +294,9 @@ public class TestFragment extends BaseRestoreFragment {
                 convertView = LayoutInflater.from(activity).inflate(
                         R.layout.album_row, parent, false);
 
-                holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
-                holder.gallery_count = (TextView) convertView.findViewById(R.id.gallery_count);
-                holder.gallery_title = (TextView) convertView.findViewById(R.id.gallery_title);
+                holder.galleryImage = convertView.findViewById(R.id.galleryImage);
+                holder.gallery_count = convertView.findViewById(R.id.gallery_count);
+                holder.gallery_title = convertView.findViewById(R.id.gallery_title);
 
                 convertView.setTag(holder);
             } else {

@@ -110,6 +110,7 @@
                 android:id="@+id/main_recycle1"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_sheet_close" />
@@ -117,11 +118,12 @@
             <GridView
                 android:id="@+id/galleryGridView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="1000dp"
                 android:layout_weight="1"
                 android:background="#ffffff"
                 android:columnWidth="172dp"
                 android:gravity="center"
+                android:visibility="gone"
                 android:horizontalSpacing="5dp"
                 android:numColumns="auto_fit"
                 android:paddingLeft="5dp"

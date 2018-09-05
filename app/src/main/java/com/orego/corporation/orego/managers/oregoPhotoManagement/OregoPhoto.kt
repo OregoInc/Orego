@@ -1,4 +1,4 @@
-package com.orego.corporation.orego.managers.oregoPhotoManagement;
+package com.orego.corporation.orego.managers.oregoPhotoManagement
 
 import android.os.Parcel
 import android.os.Parcelable

@@ -23,7 +23,7 @@ public class GalleryPreview extends BaseRestoreFragment {
     @Override
     protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.gallery_preview, container, false);
-        GalleryPreviewImg = (ImageView) linearLayout.findViewById(R.id.GalleryPreviewImg);
+        GalleryPreviewImg = linearLayout.findViewById(R.id.GalleryPreviewImg);
         path = getArguments().getString("path");
         Glide.with(GalleryPreview.this)
                 .load(new File(path)) // Uri of the picture

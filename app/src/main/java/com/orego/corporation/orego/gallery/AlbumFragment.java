@@ -38,7 +38,7 @@ public class AlbumFragment extends BaseRestoreFragment {
     @Override
     protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.activity_album, container, false);
-        galleryGridView = (GridView) linearLayout.findViewById(R.id.galleryGridView);
+        galleryGridView = linearLayout.findViewById(R.id.galleryGridView);
         return linearLayout;
     }
 
@@ -150,7 +150,7 @@ class SingleAlbumAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(activity).inflate(
                     R.layout.single_album_row, parent, false);
 
-            holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
+            holder.galleryImage = convertView.findViewById(R.id.galleryImage);
 
             convertView.setTag(holder);
         } else {

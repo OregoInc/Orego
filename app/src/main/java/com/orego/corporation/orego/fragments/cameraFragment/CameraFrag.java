@@ -37,7 +37,7 @@ public class CameraFrag extends Fragment {
         NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_camera, container, false);
         count = OregoPhotoManager.INSTANCE.getSpacePhotos().size();
 
-        buttonCamera = (ImageButton) nestedScrollView.findViewById(R.id.button_camera);
+        buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
 
         buttonCamera.setOnClickListener(v -> {
             final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");

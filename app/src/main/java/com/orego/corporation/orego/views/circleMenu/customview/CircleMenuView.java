@@ -313,7 +313,7 @@ public class CircleMenuView extends FrameLayout {
         mRingRadius = (int) (buttonSize + (mDistance - buttonSize / 2));
         mDesiredSize = (int) (mRingRadius * 2 * DEFAULT_RING_SCALE_RATIO);
 
-        mRingView = (RingEffectView) findViewById(R.id.ring_view);
+        mRingView = findViewById(R.id.ring_view);
     }
 
     private void initMenu(int menuButtonColor) {
@@ -342,7 +342,7 @@ public class CircleMenuView extends FrameLayout {
             }
         };
 
-        mMenuButton = (FloatingActionButton) findViewById(R.id.circle_menu_main_button);
+        mMenuButton = findViewById(R.id.circle_menu_main_button);
         mMenuButton.setImageResource(mIconMenu);
         mMenuButton.setBackgroundTintList(ColorStateList.valueOf(menuButtonColor));
         mMenuButton.setOnClickListener(new OnClickListener() {
