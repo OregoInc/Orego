@@ -94,7 +94,6 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
                     btnSheetOpen.visibility = VISIBLE
                     btnSwitchCamera.visibility = VISIBLE
                     btnRetry.visibility = VISIBLE
-                    textDown.visibility = View.GONE
                 } else {
                     btnCapture.visibility = GONE
                     btnSheetOpen.visibility = GONE
@@ -116,10 +115,10 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
 //                if (bottomSheet.visibility == View.INVISIBLE) {
 //                    bottomSheet.visibility = View.VISIBLE
 //                }
-                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED && (textDown.visibility == View.GONE || textDown.visibility == View.INVISIBLE)) {
+//                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED && (textDown.visibility == View.GONE || textDown.visibility == View.INVISIBLE)) {
 //                    bottomSheet.visibility = View.INVISIBLE
-                    textDown.visibility = View.VISIBLE
-                }
+//                    textDown.visibility = View.VISIBLE
+//                }
 
                 mTextViewState.text = "Sliding..."
             }

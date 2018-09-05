@@ -27,8 +27,8 @@
         android:layout_width="@dimen/icon_phone_large"
         android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_larger"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:padding="@dimen/size_normal"
         android:src="@drawable/ic_camera_sw" />
 
@@ -37,8 +37,8 @@
         android:layout_width="@dimen/icon_phone_large"
         android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/spacing_large"
         android:layout_marginEnd="@dimen/spacing_larger"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:padding="@dimen/size_normal"
         android:src="@drawable/ic_add" />
 
@@ -85,29 +85,42 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#80FFFFFF"
+        android:background="#00FFFFFF"
         android:fillViewport="true"
         app:behavior_hideable="false"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/empty_field"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:src="@drawable/ic_arrow_down"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/btn_sheet_close"
-                android:layout_width="@dimen/icon_phone"
+                android:background="#80FFFFFF"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/icon_phone"
                 android:layout_marginTop="8dp"
                 android:padding="@dimen/spacing_small"
                 android:src="@drawable/ic_arrow_down"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/empty_field" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/main_recycle1"
+                android:background="#80FFFFFF"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:nestedScrollingEnabled="false"
@@ -123,7 +136,6 @@
                 android:background="#ffffff"
                 android:columnWidth="172dp"
                 android:gravity="center"
-                android:visibility="gone"
                 android:horizontalSpacing="5dp"
                 android:numColumns="auto_fit"
                 android:paddingLeft="5dp"
@@ -133,7 +145,7 @@
                 android:verticalSpacing="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_recycle1"/>
+                app:layout_constraintTop_toBottomOf="@id/main_recycle1" />
 
         </android.support.constraint.ConstraintLayout>
 
