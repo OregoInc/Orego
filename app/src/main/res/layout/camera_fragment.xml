@@ -20,27 +20,27 @@
         android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="top|end"
         android:padding="@dimen/size_normal"
-        android:src="@drawable/ic_info" />
+        android:src="@drawable/ic_info_white" />
 
     <ImageView
         android:id="@+id/btn_switch"
         android:layout_width="@dimen/icon_phone_large"
         android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|start"
-        android:layout_marginStart="@dimen/spacing_larger"
         android:layout_marginBottom="@dimen/spacing_large"
+        android:layout_marginStart="@dimen/spacing_larger"
         android:padding="@dimen/size_normal"
-        android:src="@drawable/ic_camera_sw" />
+        android:src="@drawable/ic_camera_sw_white" />
 
     <ImageView
         android:id="@+id/btn_sheet_open"
         android:layout_width="@dimen/icon_phone_large"
         android:layout_height="@dimen/icon_phone_large"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/spacing_larger"
         android:layout_marginBottom="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_larger"
         android:padding="@dimen/size_normal"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_add_white" />
 
     <!--  -->
     <FrameLayout
@@ -54,17 +54,17 @@
             android:id="@+id/camera_retry"
             android:layout_width="@dimen/size_huge"
             android:layout_height="@dimen/size_huge"
-            android:background="@drawable/camera_btn_retry_bg"
+            android:background="@drawable/btn_bg_camera_retry"
             android:contentDescription="@null"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_camera_retry" />
+            android:src="@drawable/ic_undo_black" />
 
         <ImageView
             android:id="@+id/camera_capture"
             android:layout_width="@dimen/size_large"
             android:layout_height="@dimen/size_large"
             android:layout_gravity="center"
-            android:background="@drawable/camera_btn_capture_bg"
+            android:background="@drawable/btn_bg_camera_capture"
             android:contentDescription="@null"
             android:scaleType="centerInside" />
 
@@ -100,7 +100,7 @@
                 android:id="@+id/empty_field"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:src="@drawable/ic_arrow_down"
+                android:src="@drawable/ic_arrow_down_white"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,21 +108,21 @@
 
             <ImageView
                 android:id="@+id/btn_sheet_close"
-                android:background="#80FFFFFF"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/icon_phone"
                 android:layout_marginTop="8dp"
+                android:background="#80FFFFFF"
                 android:padding="@dimen/spacing_small"
-                android:src="@drawable/ic_arrow_down"
+                android:src="@drawable/ic_arrow_down_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/empty_field" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/main_recycle1"
-                android:background="#80FFFFFF"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:background="#80FFFFFF"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -139,8 +139,8 @@
                 android:horizontalSpacing="5dp"
                 android:numColumns="auto_fit"
                 android:paddingLeft="5dp"
-                android:paddingTop="5dp"
                 android:paddingRight="5dp"
+                android:paddingTop="5dp"
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="5dp"
                 app:layout_constraintEnd_toEndOf="parent"

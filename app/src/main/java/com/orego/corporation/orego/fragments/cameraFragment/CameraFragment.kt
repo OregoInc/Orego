@@ -17,7 +17,6 @@ import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.FragmentActivity
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -27,7 +26,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.LinearInterpolator
 import android.widget.*
-import butterknife.ButterKnife
 import com.bumptech.glide.Glide
 import com.orego.corporation.orego.R
 import com.orego.corporation.orego.R.id.main_recycle1
@@ -180,7 +178,6 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
             val px = PermissionUtils.convertDpToPixel(dp, Objects.requireNonNull(context))
             galleryGridView.columnWidth = Math.round(px)
         }
-        ButterKnife.bind(this, root!!)
         val title = ArrayList<String>()
         val size = 50
         for (i in 0 until size) {
@@ -358,7 +355,7 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
 
     private fun expand() {
         isExpanded = true
-        btnCapture.setImageResource(R.drawable.ic_camera_done)
+        btnCapture.setImageResource(R.drawable.ic_done_black)
         btnRetry.isEnabled = true
         btnSwitchCamera.visibility = GONE
 
