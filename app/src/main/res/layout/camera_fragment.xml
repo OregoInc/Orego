@@ -70,16 +70,6 @@
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/text_view_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:layout_marginTop="16dp"
-        android:text="State"
-        android:textColor="@android:color/black"
-        android:textSize="30sp" />
-
     <!--  -->
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_sheet"

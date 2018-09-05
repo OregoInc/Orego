@@ -17,9 +17,7 @@ import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.FragmentActivity
 import android.support.v4.widget.NestedScrollView
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
@@ -39,6 +37,7 @@ import com.orego.corporation.orego.gallery.MapComparator
 import com.orego.corporation.orego.gallery.PermissionUtils
 import com.orego.corporation.orego.layout.impl.ScaleTransformer
 import com.orego.corporation.orego.managers.GalleryLayoutManager
+import com.orego.corporation.orego.utils.SwipeListener
 import com.orego.corporation.orego.views.cameraview.CameraManager
 import com.orego.corporation.orego.views.cameraview.CameraUtils
 import java.io.File
@@ -60,34 +59,29 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
     private lateinit var btnInfo: ImageView
     private var isExpanded: Boolean = false
     private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
-    lateinit var mTextViewState: TextView
     lateinit var btnSheetOpen: ImageView
     private lateinit var buttonCollapse: ImageView
-    var stateScrollView = -1
     private val REQUEST_PERMISSION_KEY = 1
 
     lateinit var galleryGridView: GridView
     private lateinit var loadAlbumTask: LoadAlbum
     internal var albumList = ArrayList<HashMap<String, String>>()
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateContentView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val coordinatorLayout = inflater!!.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
 //        val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
-
         mMainRecycle1 = coordinatorLayout.findViewById(main_recycle1)
-        val textDown = coordinatorLayout.findViewById<GridView>(R.id.galleryGridView)
         val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        mTextViewState = coordinatorLayout.findViewById(R.id.text_view_state)
         btnSheetOpen = coordinatorLayout.findViewById<View>(R.id.btn_sheet_open) as ImageView
         buttonCollapse = coordinatorLayout.findViewById<View>(R.id.btn_sheet_close) as ImageView
         btnSheetOpen.setOnClickListener {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
+            mBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
         buttonCollapse.setOnClickListener { mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED) }
         btnInfo = coordinatorLayout.findViewById(R.id.btn_info)
         mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     btnCapture.visibility = VISIBLE
@@ -100,27 +94,9 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
                     btnSwitchCamera.visibility = GONE
                     btnRetry.visibility = GONE
                 }
-                stateScrollView = newState
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState.text = "Collapsed"
-                    BottomSheetBehavior.STATE_DRAGGING -> mTextViewState.text = "Dragging..."
-                    BottomSheetBehavior.STATE_EXPANDED -> mTextViewState.text = "Expanded"
-                    BottomSheetBehavior.STATE_HIDDEN -> mTextViewState.text = "Hidden"
-                    BottomSheetBehavior.STATE_SETTLING -> mTextViewState.text = "Settling..."
-                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
-//                if (bottomSheet.visibility == View.INVISIBLE) {
-//                    bottomSheet.visibility = View.VISIBLE
-//                }
-//                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED && (textDown.visibility == View.GONE || textDown.visibility == View.INVISIBLE)) {
-//                    bottomSheet.visibility = View.INVISIBLE
-//                    textDown.visibility = View.VISIBLE
-//                }
-
-                mTextViewState.text = "Sliding..."
             }
         })
 
@@ -139,8 +115,9 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
             onSwitchClick()
             true
         }
+        mSurfaceView.isScrollContainer = true
         mPictureView = coordinatorLayout.findViewById<View>(R.id.camera_picture_preview) as ImageView
-
+        mSurfaceView.setOnTouchListener(SwipeListener(this.context!!, mBottomSheetBehavior))
         CameraManager.getInstance().init(context)
 
         // fix `java.lang.RuntimeException: startPreview failed` on api 10
@@ -230,32 +207,12 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         }
     }
 
-
-    /**
-     * Returns true iff the NestedScrollView is scrolled to the bottom of its
-     * content (i.e. if the card's inner RecyclerView is completely visible).
-     */
-    private fun isNsvScrolledToBottom(nsv: NestedScrollView): Boolean {
-        return !nsv.canScrollVertically(1)
-    }
-
-    /**
-     * Returns true iff the RecyclerView is scrolled to the top of its
-     * content (i.e. if the RecyclerView's first item is completely visible).
-     */
-    private fun isRvScrolledToTop(rv: RecyclerView): Boolean {
-        val lm = rv.layoutManager as LinearLayoutManager
-        return lm.findFirstVisibleItemPosition() == 0 && lm.findViewByPosition(0).top == 0
-    }
-
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause")
-
         if (CameraManager.getInstance().isOpened) {
             CameraManager.getInstance().close()
         }
-        //        mCameraView.onPause();
     }
 
 
