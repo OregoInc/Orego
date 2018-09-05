@@ -12,36 +12,26 @@ import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.SurfaceHolder
-import android.view.SurfaceView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.orego.corporation.orego.R
 import com.orego.corporation.orego.views.cameraview.CameraManager
 import com.orego.corporation.orego.views.cameraview.CameraUtils
-
 import java.io.File
-import java.util.Objects
-
-import android.view.View.GONE
-import android.view.View.VISIBLE
 
 class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener {
     private lateinit var mSurfaceView: SurfaceView
     private lateinit var mPictureView: ImageView
-    private lateinit var mCameraListener: CameraListener
+    private var mCameraListener: CameraListener? = null
     private var mPicture: Bitmap? = null
     private var isSurfaceCreated: Boolean = false
     private lateinit var captureRetryLayout: View
@@ -58,41 +48,40 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val coordinatorLayout = inflater.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
-        val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
-        val text_down = coordinatorLayout.findViewById<TextView>(R.id.text_down_)
-
+//        val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
+        val textDown = coordinatorLayout.findViewById<TextView>(R.id.text_down_)
         val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         mTextViewState = coordinatorLayout.findViewById(R.id.text_view_state)
         btnSheetOpen = coordinatorLayout.findViewById<View>(R.id.btn_sheet_open) as ImageView
         buttonCollapse = coordinatorLayout.findViewById<View>(R.id.btn_sheet_close) as ImageView
-        btnSheetOpen!!.setOnClickListener {
-            mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+        btnSheetOpen.setOnClickListener {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        buttonCollapse!!.setOnClickListener { mBottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED) }
+        buttonCollapse.setOnClickListener { mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED) }
         btnInfo = coordinatorLayout.findViewById(R.id.btn_info)
-        mBottomSheetBehavior!!.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    btnCapture!!.visibility = VISIBLE
-                    btnSheetOpen!!.visibility = VISIBLE
-                    btnSwitchCamera!!.visibility = VISIBLE
-                    btnRetry!!.visibility = VISIBLE
+                    btnCapture.visibility = VISIBLE
+                    btnSheetOpen.visibility = VISIBLE
+                    btnSwitchCamera.visibility = VISIBLE
+                    btnRetry.visibility = VISIBLE
+                    textDown.visibility = View.GONE
                 } else {
-                    btnCapture!!.visibility = GONE
-                    btnSheetOpen!!.visibility = GONE
-                    btnSwitchCamera!!.visibility = GONE
-                    btnRetry!!.visibility = GONE
+                    btnCapture.visibility = GONE
+                    btnSheetOpen.visibility = GONE
+                    btnSwitchCamera.visibility = GONE
+                    btnRetry.visibility = GONE
                 }
                 stateScrollView = newState
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) text_down.visibility = View.GONE
                 when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState!!.text = "Collapsed"
-                    BottomSheetBehavior.STATE_DRAGGING -> mTextViewState!!.text = "Dragging..."
-                    BottomSheetBehavior.STATE_EXPANDED -> mTextViewState!!.text = "Expanded"
-                    BottomSheetBehavior.STATE_HIDDEN -> mTextViewState!!.text = "Hidden"
-                    BottomSheetBehavior.STATE_SETTLING -> mTextViewState!!.text = "Settling..."
+                    BottomSheetBehavior.STATE_COLLAPSED -> mTextViewState.text = "Collapsed"
+                    BottomSheetBehavior.STATE_DRAGGING -> mTextViewState.text = "Dragging..."
+                    BottomSheetBehavior.STATE_EXPANDED -> mTextViewState.text = "Expanded"
+                    BottomSheetBehavior.STATE_HIDDEN -> mTextViewState.text = "Hidden"
+                    BottomSheetBehavior.STATE_SETTLING -> mTextViewState.text = "Settling..."
                 }
             }
 
@@ -101,12 +90,12 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
                 if (bottomSheet.visibility == View.INVISIBLE) {
                     bottomSheet.visibility = View.VISIBLE
                 }
-                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED) {
+                if (stateScrollView == BottomSheetBehavior.STATE_EXPANDED && (textDown.visibility == View.GONE || textDown.visibility == View.INVISIBLE)) {
                     bottomSheet.visibility = View.INVISIBLE
-                    text_down.visibility = View.VISIBLE
+                    textDown.visibility = View.VISIBLE
                 }
 
-                mTextViewState!!.text = "Sliding..."
+                mTextViewState.text = "Sliding..."
             }
         })
 
@@ -121,7 +110,7 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
             }
         }
         mSurfaceView = coordinatorLayout.findViewById<View>(R.id.camera_surface) as SurfaceView
-        mSurfaceView!!.setOnLongClickListener {
+        mSurfaceView.setOnLongClickListener {
             onSwitchClick()
             true
         }
@@ -130,9 +119,9 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         CameraManager.getInstance().init(context)
 
         // fix `java.lang.RuntimeException: startPreview failed` on api 10
-        mSurfaceView!!.holder.addCallback(this)
-        btnInfo!!.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
-        btnInfo!!.setOnClickListener(this)
+        mSurfaceView.holder.addCallback(this)
+        btnInfo.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
+        btnInfo.setOnClickListener(this)
 
         captureRetryLayout = coordinatorLayout.findViewById(R.id.camera_capture_retry_layout)
 
@@ -140,10 +129,10 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         btnRetry = coordinatorLayout.findViewById<View>(R.id.camera_retry) as ImageView
         btnSwitchCamera = coordinatorLayout.findViewById<View>(R.id.btn_switch) as ImageView
 
-        btnCapture!!.setOnClickListener(this)
-        btnRetry!!.setOnClickListener(this)
-        btnRetry!!.isEnabled = false
-        btnSwitchCamera!!.setOnClickListener(this)
+        btnCapture.setOnClickListener(this)
+        btnRetry.setOnClickListener(this)
+        btnRetry.isEnabled = false
+        btnSwitchCamera.setOnClickListener(this)
 
         return coordinatorLayout
     }
@@ -233,12 +222,12 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
     private fun onCaptureClick() {
         CameraManager.getInstance().takePicture { bitmap ->
             if (bitmap != null) {
-                mSurfaceView!!.visibility = GONE
-                btnInfo!!.visibility = GONE
-                btnSheetOpen!!.visibility = GONE
-                mPictureView!!.visibility = VISIBLE
+                mSurfaceView.visibility = GONE
+                btnInfo.visibility = GONE
+                btnSheetOpen.visibility = GONE
+                mPictureView.visibility = VISIBLE
                 mPicture = bitmap
-                mPictureView!!.setImageBitmap(mPicture)
+                mPictureView.setImageBitmap(mPicture)
                 expand()
             } else {
                 isExpanded = false
@@ -255,11 +244,11 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     private fun onRetryClick() {
         mPicture = null
-        mSurfaceView!!.visibility = VISIBLE
-        btnInfo!!.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
-        btnSheetOpen!!.visibility = VISIBLE
-        mPictureView!!.setImageBitmap(null)
-        mPictureView!!.visibility = GONE
+        mSurfaceView.visibility = VISIBLE
+        btnInfo.visibility = if (CameraManager.getInstance().hasMultiCamera()) VISIBLE else GONE
+        btnSheetOpen.visibility = VISIBLE
+        mPictureView.setImageBitmap(null)
+        mPictureView.visibility = GONE
         fold()
     }
 
@@ -291,9 +280,9 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     private fun expand() {
         isExpanded = true
-        btnCapture!!.setImageResource(R.drawable.ic_camera_done)
-        btnRetry!!.isEnabled = true
-        btnSwitchCamera!!.visibility = GONE
+        btnCapture.setImageResource(R.drawable.ic_camera_done)
+        btnRetry.isEnabled = true
+        btnSwitchCamera.visibility = GONE
 
         playExpandAnimation()
     }
@@ -305,11 +294,11 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         scaleAnimator.duration = 100
         scaleAnimator.addUpdateListener { animation ->
             val value = animation.animatedValue as Int
-            val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+            val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
             captureParams.width = value
             captureParams.height = value
             captureParams.gravity = Gravity.CENTER
-            btnCapture!!.requestLayout()
+            btnCapture.requestLayout()
         }
 
         val transAnimator = ValueAnimator.ofInt(CameraUtils.dp2px(context!!, 80f), CameraUtils.dp2px(context!!, 280f))
@@ -317,12 +306,12 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
         transAnimator.duration = 200
         transAnimator.addUpdateListener { animation ->
             val value = animation.animatedValue as Int
-            val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+            val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
             captureParams.gravity = Gravity.END
 
-            val layoutParams = captureRetryLayout!!.layoutParams as CoordinatorLayout.LayoutParams
+            val layoutParams = captureRetryLayout.layoutParams as CoordinatorLayout.LayoutParams
             layoutParams.width = value
-            captureRetryLayout!!.requestLayout()
+            captureRetryLayout.requestLayout()
         }
 
         val animatorSet = AnimatorSet()
@@ -332,19 +321,19 @@ class CameraFragment : Fragment(), SurfaceHolder.Callback, View.OnClickListener 
 
     private fun fold() {
         isExpanded = false
-        btnCapture!!.setImageResource(0)
-        btnRetry!!.isEnabled = false
-        btnSwitchCamera!!.visibility = VISIBLE
+        btnCapture.setImageResource(0)
+        btnRetry.isEnabled = false
+        btnSwitchCamera.visibility = VISIBLE
 
         val length = CameraUtils.dp2px(context!!, 60f)
-        val captureParams = btnCapture!!.layoutParams as FrameLayout.LayoutParams
+        val captureParams = btnCapture.layoutParams as FrameLayout.LayoutParams
         captureParams.width = length
         captureParams.height = length
         captureParams.gravity = Gravity.CENTER
 
-        val layoutParams = captureRetryLayout!!.layoutParams as CoordinatorLayout.LayoutParams
+        val layoutParams = captureRetryLayout.layoutParams as CoordinatorLayout.LayoutParams
         layoutParams.width = CameraUtils.dp2px(context!!, 80f)
-        captureRetryLayout!!.requestLayout()
+        captureRetryLayout.requestLayout()
     }
 
     companion object {
