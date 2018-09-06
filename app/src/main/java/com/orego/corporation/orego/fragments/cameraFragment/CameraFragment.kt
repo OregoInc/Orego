@@ -15,7 +15,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
@@ -41,6 +40,7 @@ import com.orego.corporation.orego.gallery.MapComparator
 import com.orego.corporation.orego.gallery.PermissionUtils
 import com.orego.corporation.orego.layout.impl.ScaleTransformer
 import com.orego.corporation.orego.managers.GalleryLayoutManager
+import com.orego.corporation.orego.utils.ClientMultipartFormPost
 import com.orego.corporation.orego.utils.SwipeListener
 import com.orego.corporation.orego.views.adapters.oregoGalleryAdapter.OregoGalleryAdapter
 import com.orego.corporation.orego.views.cameraview.CameraManager
@@ -55,7 +55,6 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
     private var mMainRecycle1: RecyclerView? = null
     private lateinit var mSurfaceView: SurfaceView
     private lateinit var mPictureView: ImageView
-    private var mCameraListener: CameraListener? = null
     private var mPicture: Bitmap? = null
     private var isSurfaceCreated: Boolean = false
     private lateinit var captureRetryLayout: View
@@ -68,17 +67,15 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
     lateinit var btnSheetOpen: ImageView
     private lateinit var buttonCollapse: ImageView
     private val REQUEST_PERMISSION_KEY = 1
+    private var mCameraListener: CameraListener? = null
 
     lateinit var galleryGridView: GridView
     private lateinit var loadAlbumTask: LoadAlbum
     internal var albumList = ArrayList<HashMap<String, String>>()
-    var mPath: String? = null
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateContentView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val coordinatorLayout = inflater!!.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
-        initPath()
         mMainRecycle1 = coordinatorLayout.findViewById(main_recycle1)
         val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -111,35 +108,7 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         isExpanded = false
         mCameraListener = object : CameraListener {
             override fun onCapture(bitmap: Bitmap) {
-                Log.d(TAG, bitmap.toString())
-
-                val file = File(mPath)
-                if (!file.parentFile.exists()) {
-                    file.parentFile.mkdirs()
-                }
-
-                try {
-                    val out = FileOutputStream(file)
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                    out.flush()
-                    out.close()
-                } catch (e: IOException) {
-                    Log.e(TAG, "save picture error", e)
-                }
-
-                if (file.exists()) {
-                    val data = Intent()
-                    data.data = Uri.parse(mPath)
-                    activity!!.setResult(RESULT_OK, data)
-                }
-                activity!!.finish()
-                CameraFrag.setImage()
-                val intent = Intent(activity, ModelActivity::class.java)
-                val b = Bundle()
-                b.putInt("countModel", CameraFrag.getCount() - 1)
-                b.putString("model", "null")
-                intent.putExtras(b)
-                startActivity(intent)
+                ClientMultipartFormPost.sendPictureAndReplace(bitmap, initPath(activity!!), activity!!)
             }
 
             override fun onCameraError(th: Throwable) {
@@ -254,13 +223,7 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         fun onCapture(bitmap: Bitmap)
 
         fun onCameraError(th: Throwable)
-
     }
-
-
-    //    private void init() {
-    //
-    //    }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.d(TAG, "surfaceCreated")
@@ -408,6 +371,16 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
     companion object {
         private const val TAG = "CameraFragment"
 
+        fun initPath(activity: Activity): String {
+            val orego = File(activity.cacheDir, "/OREGO")
+            if (!orego.exists()) orego.mkdir()
+            directoryPhoto = File(orego, "directory${CameraFrag.getCount()}")
+            if (!directoryPhoto.exists()) directoryPhoto.mkdir()
+            val photo = File(directoryPhoto, "result.jpg")
+            val mPath = photo.absolutePath
+            return mPath!!
+        }
+
         fun startForResult(activity: Activity, path: File, requestCode: Int) {
             val intent = Intent(activity, CameraFragment::class.java)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, path.absolutePath)
@@ -469,14 +442,6 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         }
     }
 
-    private fun initPath() {
-        val orego = File(Environment.getExternalStorageDirectory(), "/OREGO")
-        if (!orego.exists()) orego.mkdir()
-        directoryPhoto = File(orego, "directory${CameraFrag.getCount()}")
-        if (!directoryPhoto.exists()) directoryPhoto.mkdir()
-        val photo = File(directoryPhoto, "result.jpg")
-        mPath = photo.absolutePath
-    }
 
     internal inner class AlbumAdapter(private val activity: Activity, private val data: ArrayList<HashMap<String, String>>) : BaseAdapter() {
 

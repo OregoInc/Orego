@@ -42,7 +42,7 @@ public class CameraFrag extends Fragment {
         buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
 
         buttonCamera.setOnClickListener(v -> {
-            final File orego = new File(Environment.getExternalStorageDirectory(), "/OREGO");
+            final File orego = new File(getActivity().getCacheDir(), "/OREGO");
             if (!orego.exists()) orego.mkdir();
             directoryPhoto = new File(orego, "directory" + count);
             if (!directoryPhoto.exists()) directoryPhoto.mkdir();

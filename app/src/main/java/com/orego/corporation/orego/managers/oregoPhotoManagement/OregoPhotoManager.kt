@@ -1,12 +1,12 @@
 package com.orego.corporation.orego.managers.oregoPhotoManagement
 
-import android.os.Environment
+import com.orego.corporation.orego.fragments.MainActivity
 import java.io.File
+
 
 object OregoPhotoManager {
 
-    private val file: File = File(Environment.getExternalStorageDirectory(), "/OREGO")
-
+    private val file: File = File(MainActivity.THIS.baseContext.cacheDir, "/OREGO")
 
     private val oregoPhotoList = mutableListOf<OregoPhoto>()
 

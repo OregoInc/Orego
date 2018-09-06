@@ -1,5 +1,15 @@
 package com.orego.corporation.orego.utils;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.orego.corporation.orego.fragments.cameraFragment.CameraFrag;
+import com.orego.corporation.orego.fragments.otherActivities.face3dActivity.model3D.view.ModelActivity;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -11,10 +21,43 @@ import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+
 public class ClientMultipartFormPost {
+    private static String TAG = "ClientMultipartFormPost";
+
+    public static void sendPictureAndReplace(Bitmap bitmap, String mPath, Activity activity) {
+        Log.d(TAG, bitmap.toString());
+
+        File file = new File(mPath);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            Log.e(TAG, "save picture error", e);
+        }
+
+        if (file.exists()) {
+            Intent data = new Intent();
+            data.setData(Uri.parse(mPath));
+            activity.setResult(Activity.RESULT_OK, data);
+        }
+        activity.finish();
+        CameraFrag.setImage();
+        Intent intent = new Intent(activity, ModelActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("countModel", CameraFrag.getCount() - 1);
+        b.putString("model", "null");
+        intent.putExtras(b);
+        activity.startActivity(intent);
+    }
 
     public static File sendFile(File dir) throws IOException {
-        String charset = "UTF-8";
         URL url = new URL("https://face.spbpu.com/servletpost/");
         File file = new File(dir, "result.jpg");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

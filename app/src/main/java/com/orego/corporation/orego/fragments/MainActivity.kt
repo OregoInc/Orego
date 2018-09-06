@@ -92,19 +92,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        Log.i(TAG, "OnBackPressed index:$currentIndexFragment")
-        if (currentIndexFragment != 0) replaceFragment(0)
-        else {
-            super.onBackPressed()
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_HOME)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            this.startActivity(intent)
-            this.finish()
-            System.exit(EXIT_STATUS)
-        }
-    }
+//    override fun onBackPressed() {
+//        Log.i(TAG, "OnBackPressed index:$currentIndexFragment")
+//        if (currentIndexFragment != 0) replaceFragment(0)
+//        else {
+//            super.onBackPressed()
+//            val intent = Intent(Intent.ACTION_MAIN)
+//            intent.addCategory(Intent.CATEGORY_HOME)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            this.startActivity(intent)
+//            this.finish()
+//            System.exit(EXIT_STATUS)
+//        }
+//    }
 
 
     fun replaceFragment(fragment: Fragment) {

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MergeCursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,11 +19,14 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.orego.corporation.orego.R;
 import com.orego.corporation.orego.base.BaseRestoreFragment;
+import com.orego.corporation.orego.fragments.cameraFragment.CameraFragment;
+import com.orego.corporation.orego.utils.ClientMultipartFormPost;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,13 +53,12 @@ public class AlbumFragment extends BaseRestoreFragment {
         album_name = getArguments().getString("name");
         getActivity().setTitle(album_name);
 
-        int iDisplayWidth = getResources().getDisplayMetrics().widthPixels ;
+        int iDisplayWidth = getResources().getDisplayMetrics().widthPixels;
         Resources resources = getActivity().getApplicationContext().getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float dp = iDisplayWidth / (metrics.densityDpi / 160f);
 
-        if(dp < 360)
-        {
+        if (dp < 360) {
             dp = (dp - 17) / 2;
             float px = PermissionUtils.convertDpToPixel(dp, getActivity().getApplicationContext());
             galleryGridView.setColumnWidth(Math.round(px));
@@ -86,12 +90,12 @@ public class AlbumFragment extends BaseRestoreFragment {
             Uri uriExternal = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
             Uri uriInternal = MediaStore.Images.Media.INTERNAL_CONTENT_URI;
 
-            String[] projection = { MediaStore.MediaColumns.DATA,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED };
+            String[] projection = {MediaStore.MediaColumns.DATA,
+                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED};
 
-            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "bucket_display_name = \""+album_name+"\"", null, null);
-            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "bucket_display_name = \""+album_name+"\"", null, null);
-            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal,cursorInternal});
+            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
+            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
+            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal, cursorInternal});
             while (cursor.moveToNext()) {
 
                 path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
@@ -110,16 +114,12 @@ public class AlbumFragment extends BaseRestoreFragment {
 
             SingleAlbumAdapter adapter = new SingleAlbumAdapter(getActivity(), imageList);
             galleryGridView.setAdapter(adapter);
-            galleryGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        final int position, long id) {
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("path", imageList.get(+position).get(PermissionUtils.KEY_PATH));
-//                    GalleryPreview galleryPreview = new GalleryPreview();
-//                    galleryPreview.setArguments(bundle);
-//                    ((MainActivity) getActivity()).replaceFragment(galleryPreview);
-                    Toast.makeText(getActivity(),"TODO: MakeOperationOnServer", Toast.LENGTH_SHORT).show();
-                }
+
+            galleryGridView.setOnItemClickListener((parent, view, position, id) -> {
+                ImageView imageView = getActivity().findViewById((int) id);//TODO если кто-то знает как вытащить оригин данного изображения будет лучше!
+                Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                String path = CameraFragment.Companion.initPath(getActivity());
+                ClientMultipartFormPost.sendPictureAndReplace(image, path, getActivity());
             });
         }
     }
@@ -128,23 +128,27 @@ public class AlbumFragment extends BaseRestoreFragment {
 
 class SingleAlbumAdapter extends BaseAdapter {
     private Activity activity;
-    private ArrayList<HashMap< String, String >> data;
-    public SingleAlbumAdapter(Activity a, ArrayList < HashMap < String, String >> d) {
+    private ArrayList<HashMap<String, String>> data;
+
+    public SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
         activity = a;
         data = d;
     }
+
     public int getCount() {
         return data.size();
     }
+
     public Object getItem(int position) {
         return position;
     }
+
     public long getItemId(int position) {
         return position;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        SingleAlbumViewHolder holder = null;
+        SingleAlbumViewHolder holder;
         if (convertView == null) {
             holder = new SingleAlbumViewHolder();
             convertView = LayoutInflater.from(activity).inflate(
@@ -158,7 +162,7 @@ class SingleAlbumAdapter extends BaseAdapter {
         }
         holder.galleryImage.setId(position);
 
-        HashMap < String, String > song = new HashMap < String, String > ();
+        HashMap<String, String> song;
         song = data.get(position);
         try {
 
@@ -167,7 +171,8 @@ class SingleAlbumAdapter extends BaseAdapter {
                     .into(holder.galleryImage);
 
 
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return convertView;
     }
 }

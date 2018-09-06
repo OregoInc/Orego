@@ -235,12 +235,9 @@ public class CameraManager {
                         result = null;
                     }
 
-                    mUiHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (callback != null) {
-                                callback.onEvent(result);
-                            }
+                    mUiHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onEvent(result);
                         }
                     });
                 });

@@ -37,7 +37,7 @@ public final class ModelActivity extends Activity {
     }
 
     public File getDirectory(){
-        return new File(new File(Environment.getExternalStorageDirectory(), "/OREGO")
+        return new File(new File(getCacheDir(), "/OREGO")
                 , "/directory" + getCountModel());
     }
 
@@ -71,12 +71,9 @@ public final class ModelActivity extends Activity {
                 headComposition = new HeadComposition(isFace);
                 publishProgress(3);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        gLView = new ModelSurfaceView(THIS, headComposition);
-                        setContentView(gLView);
-                    }
+                runOnUiThread(() -> {
+                    gLView = new ModelSurfaceView(THIS, headComposition);
+                    setContentView(gLView);
                 });
             } catch (IOException e) {
                 e.printStackTrace();
