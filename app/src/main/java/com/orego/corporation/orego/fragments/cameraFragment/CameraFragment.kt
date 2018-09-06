@@ -6,13 +6,16 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.MergeCursor
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
@@ -28,24 +31,28 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import com.orego.corporation.orego.R
 import com.orego.corporation.orego.R.id.main_recycle1
-import com.orego.corporation.orego.adapter.DemoAdapter
 import com.orego.corporation.orego.base.BaseRestoreFragment
 import com.orego.corporation.orego.fragments.MainActivity
+import com.orego.corporation.orego.fragments.cameraFragment.CameraFrag.directoryPhoto
+import com.orego.corporation.orego.fragments.galleryFragment.OREGO_GALLERY_ADAPTER
+import com.orego.corporation.orego.fragments.otherActivities.face3dActivity.model3D.view.ModelActivity
 import com.orego.corporation.orego.gallery.AlbumFragment
 import com.orego.corporation.orego.gallery.MapComparator
 import com.orego.corporation.orego.gallery.PermissionUtils
 import com.orego.corporation.orego.layout.impl.ScaleTransformer
 import com.orego.corporation.orego.managers.GalleryLayoutManager
 import com.orego.corporation.orego.utils.SwipeListener
+import com.orego.corporation.orego.views.adapters.oregoGalleryAdapter.OregoGalleryAdapter
 import com.orego.corporation.orego.views.cameraview.CameraManager
 import com.orego.corporation.orego.views.cameraview.CameraUtils
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
 class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnClickListener {
 
     private var mMainRecycle1: RecyclerView? = null
-    var a = 1
     private lateinit var mSurfaceView: SurfaceView
     private lateinit var mPictureView: ImageView
     private var mCameraListener: CameraListener? = null
@@ -65,11 +72,13 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
     lateinit var galleryGridView: GridView
     private lateinit var loadAlbumTask: LoadAlbum
     internal var albumList = ArrayList<HashMap<String, String>>()
+    var mPath: String? = null
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateContentView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val coordinatorLayout = inflater!!.inflate(R.layout.camera_fragment, container, false) as CoordinatorLayout
-//        val mPath = Objects.requireNonNull<FragmentActivity>(activity).intent.getStringExtra(MediaStore.EXTRA_OUTPUT)
+        initPath()
         mMainRecycle1 = coordinatorLayout.findViewById(main_recycle1)
         val bottomSheet = coordinatorLayout.findViewById<View>(R.id.bottom_sheet) as NestedScrollView
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -103,6 +112,34 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         mCameraListener = object : CameraListener {
             override fun onCapture(bitmap: Bitmap) {
                 Log.d(TAG, bitmap.toString())
+
+                val file = File(mPath)
+                if (!file.parentFile.exists()) {
+                    file.parentFile.mkdirs()
+                }
+
+                try {
+                    val out = FileOutputStream(file)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                    out.flush()
+                    out.close()
+                } catch (e: IOException) {
+                    Log.e(TAG, "save picture error", e)
+                }
+
+                if (file.exists()) {
+                    val data = Intent()
+                    data.data = Uri.parse(mPath)
+                    activity!!.setResult(RESULT_OK, data)
+                }
+                activity!!.finish()
+                CameraFrag.setImage()
+                val intent = Intent(activity, ModelActivity::class.java)
+                val b = Bundle()
+                b.putInt("countModel", CameraFrag.getCount() - 1)
+                b.putString("model", "null")
+                intent.putExtras(b)
+                startActivity(intent)
             }
 
             override fun onCameraError(th: Throwable) {
@@ -135,9 +172,9 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         btnRetry.isEnabled = false
         btnSwitchCamera.setOnClickListener(this)
         galleryGridView = coordinatorLayout.findViewById(R.id.galleryGridView) as GridView
-        val PERMISSIONS = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if (!PermissionUtils.hasPermissions(activity, *PERMISSIONS)) {
-            ActivityCompat.requestPermissions(activity!!, PERMISSIONS, REQUEST_PERMISSION_KEY)
+        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (!PermissionUtils.hasPermissions(activity, *permissions)) {
+            ActivityCompat.requestPermissions(activity!!, permissions, REQUEST_PERMISSION_KEY)
         } else {
             loadAlbumTask = LoadAlbum()
             loadAlbumTask.execute()
@@ -165,12 +202,11 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         Log.i("CAMERA_FRAGMENT", "mMainRecycle1 = $mMainRecycle1")
         layoutManager1.attach(mMainRecycle1, 0)
         layoutManager1.setItemTransformer(ScaleTransformer())
-        val demoAdapter1 = object : DemoAdapter(title) {
-        }
-        demoAdapter1.setOnItemClickListener { _, position -> mMainRecycle1!!.smoothScrollToPosition(position) }
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL);
-//        mMainRecycle1.addItemDecoration(dividerItemDecoration);
-        mMainRecycle1!!.adapter = demoAdapter1
+        val adapter = OregoGalleryAdapter()
+        OREGO_GALLERY_ADAPTER = adapter
+        mMainRecycle1!!.setHasFixedSize(true)
+        mMainRecycle1!!.adapter = adapter
+        mMainRecycle1!!.layoutManager = layoutManager1
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -433,6 +469,15 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         }
     }
 
+    private fun initPath() {
+        val orego = File(Environment.getExternalStorageDirectory(), "/OREGO")
+        if (!orego.exists()) orego.mkdir()
+        directoryPhoto = File(orego, "directory${CameraFrag.getCount()}")
+        if (!directoryPhoto.exists()) directoryPhoto.mkdir()
+        val photo = File(directoryPhoto, "result.jpg")
+        mPath = photo.absolutePath
+    }
+
     internal inner class AlbumAdapter(private val activity: Activity, private val data: ArrayList<HashMap<String, String>>) : BaseAdapter() {
 
         override fun getCount(): Int {
@@ -448,20 +493,20 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            var convertView = convertView
+            var viewConvert = convertView
             val holder: AlbumViewHolder?
-            if (convertView == null) {
+            if (viewConvert == null) {
                 holder = AlbumViewHolder()
-                convertView = LayoutInflater.from(activity).inflate(
+                viewConvert = LayoutInflater.from(activity).inflate(
                         R.layout.album_row, parent, false)
 
-                holder.galleryImage = convertView!!.findViewById<View>(R.id.galleryImage) as ImageView
-                holder.galleryCount = convertView.findViewById<View>(R.id.gallery_count) as TextView
-                holder.galleryTitle = convertView.findViewById<View>(R.id.gallery_title) as TextView
+                holder.galleryImage = viewConvert!!.findViewById<View>(R.id.galleryImage) as ImageView
+                holder.galleryCount = viewConvert.findViewById<View>(R.id.gallery_count) as TextView
+                holder.galleryTitle = viewConvert.findViewById<View>(R.id.gallery_title) as TextView
 
-                convertView.tag = holder
+                viewConvert.tag = holder
             } else {
-                holder = convertView.tag as AlbumViewHolder
+                holder = viewConvert.tag as AlbumViewHolder
             }
             holder.galleryImage!!.id = position
             holder.galleryCount!!.id = position
@@ -480,7 +525,7 @@ class CameraFragment : BaseRestoreFragment(), SurfaceHolder.Callback, View.OnCli
             } catch (ignored: Exception) {
             }
 
-            return convertView
+            return viewConvert
         }
     }
 

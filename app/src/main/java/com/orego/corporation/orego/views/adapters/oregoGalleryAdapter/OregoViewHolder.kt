@@ -13,6 +13,7 @@ import android.widget.ImageView
 import com.orego.corporation.orego.managers.oregoPhotoManagement.OregoPhotoManager
 import com.orego.corporation.orego.R
 import com.orego.corporation.orego.fragments.MainActivity
+import com.orego.corporation.orego.fragments.cameraFragment.CameraFrag
 import com.orego.corporation.orego.fragments.galleryFragment.GalleryFragment
 import com.orego.corporation.orego.fragments.otherActivities.OldMainActivity
 import com.orego.corporation.orego.fragments.otherActivities.face3dActivity.model3D.view.ModelActivity
@@ -34,12 +35,12 @@ class OregoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.
         val position = adapterPosition
         if (position != RecyclerView.NO_POSITION) {
             OregoPhotoManager.getSpacePhotos()[position]
-            val intent = Intent(GalleryFragment.INIT.getTHIS()!!.context, ModelActivity::class.java)
+            val intent = Intent(view.context, ModelActivity::class.java)
             val b = Bundle()
             b.putInt("countModel", position)
             b.putString("model", "null")
             intent.putExtras(b)
-            GalleryFragment.getTHIS()!!.startActivity(intent)
+            view.context.startActivity(intent)
         }
     }
 
@@ -62,14 +63,14 @@ class OregoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("PrivateResource", "ClickableViewAccessibility")
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        val action = event?.action
-        val cond = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
-        if (cond){
-            val currentPhoto = MainActivity.THIS.findViewById<ImageView>(R.id.current_orego_photo)
-            currentPhoto.visibility = View.INVISIBLE
-            currentPhoto.startAnimation(AnimationUtils.loadAnimation(MainActivity.THIS
-                    , R.anim.abc_shrink_fade_out_from_bottom))
-        }
+//        val action = event?.action
+//        val cond = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
+//        if (cond){
+//            val currentPhoto = MainActivity.THIS.findViewById<ImageView>(R.id.current_orego_photo)
+//            currentPhoto.visibility = View.INVISIBLE
+//            currentPhoto.startAnimation(AnimationUtils.loadAnimation(MainActivity.THIS
+//                    , R.anim.abc_shrink_fade_out_from_bottom))
+//        }
         return event?.action == MotionEvent.ACTION_BUTTON_RELEASE
     }
 }

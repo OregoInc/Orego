@@ -26,7 +26,7 @@ public class CameraFrag extends Fragment {
     Activity parent;
     private static int count = 0;
     static File directoryPhoto;
-
+    public static Fragment THIS;
     public static int getCount() {
         return count;
     }
@@ -35,6 +35,8 @@ public class CameraFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         NestedScrollView nestedScrollView = (NestedScrollView) inflater.inflate(R.layout.fragment_camera, container, false);
+        THIS = this;
+
         count = OregoPhotoManager.INSTANCE.getSpacePhotos().size();
 
         buttonCamera = nestedScrollView.findViewById(R.id.button_camera);
