@@ -7,8 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.orego.corporation.orego.fragments.cameraFragment.CameraFrag;
-import com.orego.corporation.orego.fragments.otherActivities.face3dActivity.model3D.view.ModelActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -48,13 +46,12 @@ public class ClientMultipartFormPost {
             activity.setResult(Activity.RESULT_OK, data);
         }
         activity.finish();
-        CameraFrag.setImage();
-        Intent intent = new Intent(activity, ModelActivity.class);
-        Bundle b = new Bundle();
-        b.putInt("countModel", CameraFrag.getCount() - 1);
-        b.putString("model", "null");
-        intent.putExtras(b);
-        activity.startActivity(intent);
+
+//        Intent intent = new Intent(activity, ModelActivity.class);
+//        Bundle b = new Bundle();
+//        b.putString("model", "null");
+//        intent.putExtras(b);
+//        activity.startActivity(intent);
     }
 
     public static File sendFile(File dir) throws IOException {

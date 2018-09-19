@@ -12,25 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait"/>
         <activity
-            android:name=".fragments.otherActivities.SettingsActivity"
-            android:label="Settings"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
+            android:name=".views.otherActivities.face3dActivity.model3D.view.DemoActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.otherActivities.DonateActivity"
-            android:label="Donate"
-            android:parentActivityName=".fragments.otherActivities.OldMainActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.otherActivities.face3dActivity.model3D.view.DemoActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.otherActivities.face3dActivity.model3D.view.ModelActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".fragments.MainActivity"
+        <activity android:name=".presenters.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

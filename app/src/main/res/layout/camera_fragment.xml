@@ -109,7 +109,7 @@
                 app:layout_constraintTop_toBottomOf="@id/empty_field" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/main_recycle1"
+                android:id="@+id/horizontal_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="#80FFFFFF"
@@ -135,7 +135,7 @@
                 android:verticalSpacing="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_recycle1" />
+                app:layout_constraintTop_toBottomOf="@id/horizontal_recycler" />
 
         </android.support.constraint.ConstraintLayout>
 
